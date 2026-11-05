@@ -4,15 +4,41 @@ import StoryblokComponent from '@storyblok/astro/StoryblokComponent.astro';
 import Layout from '../layouts/Layout.astro';
 
 const { slug } = Astro.params;
-
 const storyblokApi = useStoryblokApi();
-const { data } = await storyblokApi.get(`cdn/stories/${slug || 'home'}`, {
-	version: 'draft'
-});
 
-const story = data.story;
+async function fetchStory(fullSlug: string) {
+	try {
+		const { data } = await storyblokApi.get(`cdn/stories/${fullSlug}`, {
+			version: 'draft',
+		});
+		return data.story;
+	} catch (error: any) {
+		// The Storyblok client throws on non-2xx responses. Only a missing story is
+		// expected here; anything else (bad token, outage) should still surface as a 500.
+		if (error?.status === 404) return null;
+		throw error;
+	}
+}
+
+let story = await fetchStory(slug || 'home');
+let notFound = !story || slug === '404';
+
+// Prefer an editor-managed story with the slug `404`; fall back to the static message below.
+if (!story) story = await fetchStory('404');
+
+if (notFound) Astro.response.status = 404;
 ---
 
 <Layout>
-	<StoryblokComponent blok={story.content} />
+	{
+		story ? (
+			<StoryblokComponent blok={story.content} />
+		) : (
+			<main>
+				<h1>Page not found</h1>
+				<p>The page you're looking for doesn't exist.</p>
+				<a href="/">Back to home</a>
+			</main>
+		)
+	}
 </Layout>
