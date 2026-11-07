@@ -1,0 +1,36 @@
+---
+// PROTOTYPE — one <header> that is a left sidebar on desktop and top bar + bottom tab bar on mobile (nav is position:fixed on mobile).
+import { Image } from 'astro:assets';
+import { site } from '../data';
+import { assets } from '../assets';
+const base = '/prototype/warm-2';
+const path = Astro.url.pathname.replace(/\/+$/, '');
+const icons: Record<string, string> = {
+	'': 'M3 11 12 3l9 8v10h-6v-6H9v6H3z',
+	events: 'M5 4h14a2 2 0 0 1 2 2v14H3V6a2 2 0 0 1 2-2zM3 9h18M8 2v4M16 2v4',
+	merch: 'M8 7V6a4 4 0 0 1 8 0v1h4l-1 14H5L4 7zM9 11v1M15 11v1',
+	about: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 11v6M12 7.5v.5',
+};
+---
+<header class="side">
+	<a class="brand" href={`${base}/`}>
+		<Image src={assets.logo} alt="" width={120} height={120} loading="eager" />
+		<span class="brand-name">{site.name}</span><span class="sr">, home</span>
+	</a>
+	<a class="btn btn--butter join" href={site.whatsappUrl}>Join WhatsApp</a>
+	<nav class="tabs" aria-label="Main">
+		{site.nav.map((n) => {
+			const href = `${base}${n.slug ? '/' + n.slug : ''}`;
+			const current = path === href || (n.slug === '' && path === base);
+			return (
+				<a href={n.slug ? href : `${base}/`} aria-current={current ? 'page' : undefined}>
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d={icons[n.slug]} /></svg>
+					<span>{n.label}</span>
+				</a>
+			);
+		})}
+	</nav>
+	<div class="side-cta">
+		<a class="btn btn--butter" href={site.whatsappUrl}>Join the WhatsApp group</a>
+	</div>
+</header>

@@ -1,0 +1,21 @@
+---
+// PROTOTYPE — Storyblok block: event_strip (next upcoming events, one of each title)
+import { getEvents } from '../data';
+import EventCard from './EventCard.astro';
+import { href } from './format';
+const { count = 4 } = Astro.props;
+const seen = new Set<string>();
+const upcoming = getEvents().filter((e) => (seen.has(e.title) ? false : (seen.add(e.title), true))).slice(0, count);
+---
+
+<section class="band band--cream2" aria-labelledby="ev-strip-h">
+	<div class="wrap">
+		<div class="section-head">
+			<h2 id="ev-strip-h">Coming up</h2>
+			<a class="btn btn--ghost btn--sm" href={href('events')}>See all events</a>
+		</div>
+		<ul class="ev-grid ev-grid--strip">
+			{upcoming.map((e) => <li><EventCard event={e} compact level="h3" /></li>)}
+		</ul>
+	</div>
+</section>

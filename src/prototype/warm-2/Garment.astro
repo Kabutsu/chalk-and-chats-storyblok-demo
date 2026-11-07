@@ -1,0 +1,20 @@
+---
+// PROTOTYPE — garment silhouette (tee / hoodie / tank) tinted via CSS var --garment (set by parent or inline).
+const { kind = 'tee', colour, mark } = Astro.props;
+const shapes = {
+	tee: 'M44 14Q65 30 86 14L112 28L125 56L103 64L99 54L99 118L31 118L31 54L27 64L5 56L18 28Z',
+	hoodie: 'M42 12Q65 0 88 12L110 24L127 104L108 110L99 64L99 120L31 120L22 64L22 110L3 104L20 24Z',
+	tank: 'M42 8L54 8Q65 42 76 8L88 8L97 46Q97 58 92 64L97 120L33 120L38 64Q33 58 33 46Z',
+};
+const lines = {
+	tee: 'M44 14Q65 40 86 14',
+	hoodie: 'M42 12Q65 46 88 12M65 60L65 76M52 92H78',
+	tank: 'M54 8Q65 42 76 8',
+};
+const style = [colour ? `--garment:${colour}` : '', mark ? `--mark:${mark}` : ''].filter(Boolean).join(';');
+---
+<svg class="garment" viewBox="0 0 130 130" width="130" height="130" aria-hidden="true" focusable="false" style={style || undefined}>
+	<path class="body" d={shapes[kind as keyof typeof shapes]} />
+	<path class="line" d={lines[kind as keyof typeof lines]} />
+	<path class="mark" transform="translate(50 52) scale(.3)" d="M50 6c20-2 40 12 43 32s-8 38-26 50S28 98 14 80 0 40 14 22 34 8 50 6z" />
+</svg>

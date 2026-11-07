@@ -1,0 +1,22 @@
+---
+// PROTOTYPE — Storyblok block: highlights. Three ruled columns.
+interface Props { heading: string; items: { title: string; body: string }[] }
+const { heading, items } = Astro.props;
+---
+
+<section class="hl" aria-labelledby="hl-h">
+	<div class="wrap">
+		<h2 id="hl-h" class="h-display">{heading}</h2>
+		<ul class="hl__grid">
+			{
+				items.map((h, i) => (
+					<li>
+						<span class="hl__n" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+						<h3>{h.title}</h3>
+						<p>{h.body}</p>
+					</li>
+				))
+			}
+		</ul>
+	</div>
+</section>

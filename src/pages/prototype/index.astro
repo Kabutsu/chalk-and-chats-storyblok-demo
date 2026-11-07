@@ -1,0 +1,43 @@
+---
+// PROTOTYPE — landing page listing the four design variants. Delete with src/pages/prototype and src/prototype.
+import Switcher from '../../prototype/Switcher.astro';
+import { variants } from '../../prototype/data';
+const pages = ['', 'events', 'merch', 'about'];
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="robots" content="noindex" />
+		<title>Chalk & Chats prototypes</title>
+		<style>
+			body { font-family: system-ui, sans-serif; max-width: 42rem; margin: 3rem auto; padding: 0 1rem; line-height: 1.5; color: #1b2a16; background: #faf8f2; }
+			a { color: #2f5223; }
+			ul { padding-left: 1.2rem; }
+			li { margin-block: .4rem; }
+		</style>
+	</head>
+	<body>
+		<main>
+			<h1>Chalk &amp; Chats — design prototypes</h1>
+			<p>Throwaway prototypes. Use ← / → (or the bar at the bottom) to flip between variants on the same page.</p>
+			{
+				variants.map((v) => (
+					<section>
+						<h2>{v.label}</h2>
+						<ul>
+							{pages.map((p) => (
+								<li>
+									<a href={`/prototype/${v.key}${p ? `/${p}` : ''}`}>{p === '' ? 'Home' : p[0].toUpperCase() + p.slice(1)}</a>
+								</li>
+							))}
+						</ul>
+					</section>
+				))
+			}
+		</main>
+		<Switcher />
+	</body>
+</html>

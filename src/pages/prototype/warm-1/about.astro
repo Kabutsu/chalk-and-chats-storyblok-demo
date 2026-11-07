@@ -1,0 +1,39 @@
+---
+// PROTOTYPE
+import { Image } from 'astro:assets';
+import Layout from '../../../prototype/warm-1/Layout.astro';
+import PageBanner from '../../../prototype/warm-1/PageBanner.astro';
+import Highlights from '../../../prototype/warm-1/Highlights.astro';
+import FirstSession from '../../../prototype/warm-1/FirstSession.astro';
+import Faq from '../../../prototype/warm-1/Faq.astro';
+import { assets } from '../../../prototype/assets';
+import { site, intro, hero } from '../../../prototype/data';
+---
+
+<Layout title="About">
+	<PageBanner title={`About ${site.name}`} image={assets.holdsPink} alt="Bright pink and yellow climbing holds on a teal wall" text={site.tagline} />
+	<section class="band" aria-labelledby="story-h">
+		<div class="wrap photo-split">
+			<Image class="rounded" src={assets.chalkBags} alt="Chalk bags waiting on a table between climbs" width={640} height={640} widths={[480, 640, 960]} sizes="(min-width:800px) 540px, 100vw" />
+			<div>
+				<h2 id="story-h">{intro.heading}</h2>
+				{intro.body.map((p) => <p class="lede">{p}</p>)}
+				<a class="btn btn--accent" href={hero.primaryCta.url} rel="noopener">{hero.primaryCta.label}</a>
+			</div>
+		</div>
+		<div class="wrap" style="margin-top:40px"><Highlights /></div>
+	</section>
+	<FirstSession />
+	<section class="band" aria-labelledby="faq-h">
+		<div class="wrap faq-wrap">
+			<h2 id="faq-h">Questions, answered</h2>
+			<Faq />
+		</div>
+	</section>
+	<section class="band band--cream2" aria-labelledby="contact-h">
+		<div class="wrap" style="text-align:center">
+			<h2 id="contact-h">Still wondering?</h2>
+			<p class="lede" style="margin-inline:auto">Email us at <a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a> or find us on <a href={site.instagramUrl} rel="noopener">Instagram {site.instagramHandle}</a>.</p>
+		</div>
+	</section>
+</Layout>

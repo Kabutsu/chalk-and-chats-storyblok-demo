@@ -1,0 +1,18 @@
+---
+// PROTOTYPE — inline SVG garment silhouette tinted via CSS custom property --tint.
+interface Props { kind: 'tee' | 'hoodie' | 'tank'; tint: string; class?: string }
+const { kind, tint, class: cls } = Astro.props;
+const paths = {
+	tee: 'M70 22 L36 38 L12 76 L40 94 L54 78 L54 176 L146 176 L146 78 L160 94 L188 76 L164 38 L130 22 Q100 48 70 22 Z',
+	hoodie: 'M74 26 Q100 8 126 26 L166 44 L192 132 L162 142 L148 92 L148 180 L52 180 L52 92 L38 142 L8 132 L34 44 Z',
+	tank: 'M70 18 L70 56 Q100 92 130 56 L130 18 L146 18 L146 58 Q154 78 152 96 L152 178 L48 178 L48 96 Q46 78 54 58 L54 18 Z',
+};
+---
+
+<svg class:list={['garment', cls]} viewBox="0 0 200 200" aria-hidden="true" focusable="false"style={`--tint:${tint}`} data-garment>
+	<path d={paths[kind]} class="garment__body"></path>
+	{kind === 'hoodie' && <path d="M74 26 Q100 62 126 26" class="garment__line" fill="none"></path>}
+	{kind === 'hoodie' && <path d="M72 138 H128 L134 168 H66 Z" class="garment__line" fill="none"></path>}
+	{kind === 'tee' && <path d="M70 22 Q100 48 130 22" class="garment__line" fill="none"></path>}
+	<circle cx="100" cy={kind === 'hoodie' ? 108 : 96} r="9" class="garment__logo"></circle>
+</svg>

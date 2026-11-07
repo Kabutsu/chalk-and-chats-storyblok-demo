@@ -1,0 +1,36 @@
+---
+// PROTOTYPE — one event as a photo-top card. `compact` = teaser version for the Home strip.
+import { Image } from 'astro:assets';
+import { assets } from '../assets';
+import { icsHref, type ClubEvent } from '../data';
+import { fmtDate, fmtRange, typeClass, href } from './format';
+interface Props { event: ClubEvent; compact?: boolean; level?: 'h2' | 'h3' }
+const { event: e, compact = false, level = 'h3' } = Astro.props;
+const Heading = level;
+const img = e.image ? assets[e.image] : undefined;
+---
+
+<article class="ev-card" id={`ev-${e.id}`} data-type={e.type}>
+	{img && <Image class="ph" src={img} alt="" width={480} height={270} widths={[360, 480, 720]} sizes="(min-width:1000px) 300px, (min-width:640px) 45vw, 100vw" />}
+	<div class="ev-body">
+		<p class="ev-meta">
+			<span class={`badge ${typeClass(e.type)}`}>{e.type}</span>
+			<time datetime={e.start}>{fmtDate(e.start)} · {fmtRange(e)}</time>
+		</p>
+		<Heading>{compact ? <a href={`${href('events')}#ev-${e.id}`}>{e.title}</a> : e.title}</Heading>
+		<p class="ev-place">
+			{compact ? e.place.name : <a href={e.place.mapUrl} target="_blank" rel="noopener">{e.place.name}, {e.place.area}<span class="sr-only"> (map, opens in new tab)</span></a>}
+		</p>
+		{!compact && (
+			<>
+				{e.recurrence && <p class="ev-rec">↻ {e.recurrence}</p>}
+				<p class="ev-desc">{e.description}</p>
+				<p class="ev-cost">{e.cost}</p>
+				<div class="ev-actions">
+					{e.bookingUrl && <a class="btn btn--accent btn--sm" href={e.bookingUrl} rel="noopener">Book this Session<span class="sr-only"> (external booking site)</span></a>}
+					<a class="btn btn--ghost btn--sm" href={icsHref(e)} download={`${e.id}.ics`}>Add to calendar<span class="sr-only">: {e.title}, {fmtDate(e.start)}</span></a>
+				</div>
+			</>
+		)}
+	</div>
+</article>

@@ -1,0 +1,13 @@
+---
+// PROTOTYPE — crisp variant: Merch (?drop=open|closed|none)
+import Layout from '../../../prototype/crisp/Layout.astro';
+import PageHead from '../../../prototype/crisp/PageHead.astro';
+import MerchGrid from '../../../prototype/crisp/MerchGrid.astro';
+import { merch, site, parseDropState } from '../../../prototype/data';
+const state = parseDropState(Astro.url.searchParams.get('drop'));
+---
+
+<Layout title="Merch" description="Chalk & Chats clothing, sold in occasional Drops.">
+	<PageHead kicker="Gear" title="Merch" lead="Made to order in bulk, collected at a Session." />
+	<MerchGrid state={state} items={merch.items} colours={merch.colours} sizes={merch.sizes} drop={merch.drop} whatsappUrl={site.whatsappUrl} />
+</Layout>

@@ -1,0 +1,36 @@
+---
+// PROTOTYPE
+// DESIGN THESIS (warm-2): a community noticeboard / scrapbook. Navigation lives at the SIDE (desktop sidebar) or the
+// THUMB (mobile tab bar) instead of a top header; content is a bento grid of chunky, hard-shadowed "paper" tiles with
+// hold-shaped blobs and slightly tilted polaroids. Type-led (Bagel Fat One) rather than photo-hero-led.
+import './styles.css';
+import Header from './Header.astro';
+import Footer from './Footer.astro';
+import Switcher from '../Switcher.astro';
+import { site } from '../data';
+const { title, description = site.tagline } = Astro.props;
+const full = title ? `${title} · ${site.name}` : `${site.name} — ${site.tagline}`;
+---
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="robots" content="noindex" />
+		<meta name="description" content={description} />
+		<title>{full}</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet" />
+		<script is:inline>document.documentElement.classList.add('js');</script>
+	</head>
+	<body>
+		<a class="skip" href="#main">Skip to content</a>
+		<Header />
+		<main id="main" tabindex="-1">
+			<slot />
+			<Footer />
+		</main>
+		<Switcher />
+	</body>
+</html>

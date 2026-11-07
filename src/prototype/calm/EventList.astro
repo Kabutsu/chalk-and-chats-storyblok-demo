@@ -1,0 +1,221 @@
+---
+// PROTOTYPE — throwaway. Future Storyblok block: event_list. Agenda list (default, no-JS) + month grid + type filter.
+import type { ClubEvent, EventType } from '../data';
+import { eventTypes } from '../data';
+import EventDetail from './EventDetail.astro';
+import { fmtDay, fmtTimes, monthKey, monthLabel, monthRange, weeksOf } from './format';
+interface Props {
+	events: ClubEvent[];
+}
+const { events } = Astro.props;
+
+const listMonths = [...new Set(events.map((e) => monthKey(e.start)))];
+const gridMonths = monthRange(events);
+const byDate = new Map<string, ClubEvent[]>();
+events.forEach((e) => byDate.set(e.start.slice(0, 10), [...(byDate.get(e.start.slice(0, 10)) ?? []), e]));
+const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const slug = (t: EventType) => t.toLowerCase();
+---
+
+<div data-events>
+	<div class="ev-controls" data-js hidden>
+		<fieldset>
+			<legend class="caps">Type</legend>
+			<label class="opt"><input type="radio" name="type" value="all" checked /><span>All</span></label>
+			{
+				eventTypes.map((t) => (
+					<label class="opt">
+						<input type="radio" name="type" value={slug(t)} />
+						<span>{t}</span>
+					</label>
+				))
+			}
+		</fieldset>
+		<div role="group" aria-label="View" style="display:flex">
+			<button type="button" class="pressbtn" data-view-btn="list" aria-pressed="true">List</button>
+			<button type="button" class="pressbtn" data-view-btn="grid" aria-pressed="false">Month</button>
+		</div>
+	</div>
+	<p class="ev-count" role="status" data-count></p>
+
+	<div data-view="list">
+		{
+			listMonths.map((key) => (
+				<section class="ev-month" data-month-group aria-labelledby={`m-${key}`}>
+					<h2 id={`m-${key}`}>{monthLabel(key)}</h2>
+					<ul class="ev-list">
+						{events
+							.filter((e) => monthKey(e.start) === key)
+							.map((e) => (
+								<li id={e.id} data-type={slug(e.type)} data-event>
+									<details class="ev">
+										<summary>
+											<span class="ev__date">
+												<time datetime={e.start}>{fmtDay(e.start)}</time>, {fmtTimes(e)}
+											</span>
+											<span class="ev__title">{e.title}</span>
+											<span class="ev__sub">
+												<span class="badge" data-type={slug(e.type)}>
+													{e.type}
+												</span>
+												<span class="agenda__wall"> · {e.place.name}</span>
+											</span>
+										</summary>
+										<div data-detail-id={e.id}>
+											<EventDetail event={e} />
+										</div>
+									</details>
+								</li>
+							))}
+					</ul>
+				</section>
+			))
+		}
+	</div>
+
+	<div data-view="grid" hidden>
+		<div class="grid-nav">
+			<h2 data-grid-title tabindex="-1"></h2>
+			<button type="button" class="pressbtn" data-prev aria-label="Previous month">Previous</button>
+			<button type="button" class="pressbtn" data-next aria-label="Next month">Next</button>
+		</div>
+		{
+			gridMonths.map((key) => (
+				<div class="cal-scroll" data-grid-month={key} data-label={monthLabel(key)} role="region" aria-label={`${monthLabel(key)} calendar, scrolls sideways on small screens`} tabindex="0">
+					<table class="cal">
+						<caption>Events in {monthLabel(key)}</caption>
+						<thead>
+							<tr>{weekdays.map((d) => <th scope="col">{d}</th>)}</tr>
+						</thead>
+						<tbody>
+							{weeksOf(key).map((week) => (
+								<tr>
+									{week.map((day) =>
+										day ? (
+											<td>
+												<span class="dnum">{Number(day.slice(8))}</span>
+												{(byDate.get(day) ?? []).map((e) => (
+													<button type="button" class="chip" data-type={slug(e.type)} data-id={e.id} data-title={e.title}>
+														<span class="chip__title">{e.title}</span>
+														<span class="chip__type">{e.type}</span>
+														<span class="sr-only">, {fmtDay(e.start)} at {e.start.slice(11, 16)}</span>
+													</button>
+												))}
+											</td>
+										) : (
+											<td class="empty" />
+										)
+									)}
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
+			))
+		}
+	</div>
+
+	<dialog class="ev-dialog" aria-labelledby="ev-dialog-title" data-dialog>
+		<div class="ev-dialog__top">
+			<h2 id="ev-dialog-title"></h2>
+			<button type="button" class="pressbtn" data-close>Close</button>
+		</div>
+		<div data-dialog-body></div>
+	</dialog>
+</div>
+
+<script>
+	const root = document.querySelector<HTMLElement>('[data-events]');
+	if (root) {
+		root.querySelectorAll<HTMLElement>('[data-js]').forEach((el) => (el.hidden = false));
+		const q = <T extends HTMLElement>(s: string) => root.querySelector<T>(s)!;
+		const all = <T extends HTMLElement>(s: string) => [...root.querySelectorAll<T>(s)];
+		const listView = q('[data-view="list"]');
+		const gridView = q('[data-view="grid"]');
+		const count = q('[data-count]');
+		const months = all('[data-grid-month]');
+		const title = q('[data-grid-title]');
+		const prev = q<HTMLButtonElement>('[data-prev]');
+		const next = q<HTMLButtonElement>('[data-next]');
+		let monthIdx = 0;
+		let view = 'list';
+
+		const type = () => root.querySelector<HTMLInputElement>('input[name="type"]:checked')?.value ?? 'all';
+
+		function applyFilter() {
+			const t = type();
+			let n = 0;
+			all('[data-event]').forEach((li) => {
+				const show = t === 'all' || li.dataset.type === t;
+				li.hidden = !show;
+				if (show) n++;
+			});
+			all('[data-month-group]').forEach((g) => (g.hidden = !g.querySelector('[data-event]:not([hidden])')));
+			all('.chip').forEach((c) => (c.hidden = !(t === 'all' || c.dataset.type === t)));
+			count.textContent = `${n} ${n === 1 ? 'event' : 'events'} shown`;
+		}
+
+		function showMonth(i: number, focus = false) {
+			monthIdx = Math.max(0, Math.min(months.length - 1, i));
+			months.forEach((m, k) => (m.hidden = k !== monthIdx));
+			title.textContent = months[monthIdx].dataset.label ?? '';
+			prev.disabled = monthIdx === 0;
+			next.disabled = monthIdx === months.length - 1;
+			if (focus) title.focus();
+		}
+
+		function setView(v: string) {
+			view = v;
+			listView.hidden = v !== 'list';
+			gridView.hidden = v !== 'grid';
+			all<HTMLButtonElement>('[data-view-btn]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.viewBtn === v)));
+		}
+
+		root.querySelectorAll('input[name="type"]').forEach((r) => r.addEventListener('change', applyFilter));
+		all<HTMLButtonElement>('[data-view-btn]').forEach((b) => b.addEventListener('click', () => setView(b.dataset.viewBtn!)));
+		prev.addEventListener('click', () => {
+			showMonth(monthIdx - 1);
+			(monthIdx === 0 ? next : prev).focus();
+		});
+		next.addEventListener('click', () => {
+			showMonth(monthIdx + 1);
+			(monthIdx === months.length - 1 ? prev : next).focus();
+		});
+
+		// Dialog for grid events: clone the detail body from the list.
+		const dialog = q<HTMLDialogElement>('[data-dialog]');
+		const dTitle = q('#ev-dialog-title');
+		const dBody = q('[data-dialog-body]');
+		let opener: HTMLElement | null = null;
+		root.addEventListener('click', (e) => {
+			const chip = (e.target as HTMLElement).closest<HTMLElement>('.chip');
+			if (!chip) return;
+			const src = root.querySelector(`[data-detail-id="${chip.dataset.id}"]`);
+			if (!src) return;
+			opener = chip;
+			dTitle.textContent = chip.dataset.title ?? '';
+			dBody.replaceChildren(...[...src.children].map((c) => c.cloneNode(true)));
+			dialog.showModal();
+		});
+		q('[data-close]').addEventListener('click', () => dialog.close());
+		dialog.addEventListener('click', (e) => {
+			if (e.target === dialog) dialog.close();
+		});
+		dialog.addEventListener('close', () => opener?.focus());
+
+		// Deep link from the home agenda (#event-id): open that item.
+		const openHash = () => {
+			const el = location.hash ? document.getElementById(decodeURIComponent(location.hash.slice(1))) : null;
+			const d = el?.querySelector('details');
+			if (d) {
+				setView('list');
+				d.open = true;
+			}
+		};
+		openHash();
+		window.addEventListener('hashchange', openHash);
+
+		showMonth(0);
+		applyFilter();
+	}
+</script>

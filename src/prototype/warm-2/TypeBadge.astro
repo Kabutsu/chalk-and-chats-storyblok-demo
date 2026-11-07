@@ -1,0 +1,7 @@
+---
+// PROTOTYPE — event type badge: glyph + TEXT + colour (never colour alone).
+import { typeStyle } from './format';
+const { type } = Astro.props;
+const s = typeStyle[type as keyof typeof typeStyle];
+---
+<span class={`tag tag--${s.cls}`}><span aria-hidden="true">{s.glyph}</span>{type}</span>

@@ -1,0 +1,29 @@
+---
+// PROTOTYPE — crisp variant: About / Your first Session
+import Layout from '../../../prototype/crisp/Layout.astro';
+import PageHead from '../../../prototype/crisp/PageHead.astro';
+import Story from '../../../prototype/crisp/Story.astro';
+import Highlights from '../../../prototype/crisp/Highlights.astro';
+import FirstSession from '../../../prototype/crisp/FirstSession.astro';
+import Faq from '../../../prototype/crisp/Faq.astro';
+import InstagramBand from '../../../prototype/crisp/InstagramBand.astro';
+import { site, intro, highlights, firstSession, faq, hero, wednesdayBookingUrl } from '../../../prototype/data';
+import { assets } from '../../../prototype/assets';
+---
+
+<Layout title="About" description="Who we are and what to expect at your first Chalk & Chats Session.">
+	<PageHead kicker="About" title="About Chalk & Chats" lead={site.tagline} />
+	<Story
+		heading={intro.heading}
+		body={intro.body}
+		image={assets.holdsBlue}
+		imageAlt="Colourful climbing holds on a pale blue indoor wall"
+		contactEmail={site.contactEmail}
+		instagramUrl={site.instagramUrl}
+		instagramHandle={site.instagramHandle}
+	/>
+	<Highlights heading="Why people stay" items={highlights} />
+	<FirstSession {...firstSession} bookingUrl={wednesdayBookingUrl} bookingLabel={hero.secondaryCta.label} />
+	<Faq heading="Questions" items={faq} />
+	<InstagramBand handle={site.instagramHandle} url={site.instagramUrl} label="Follow on Instagram" text={`Questions? Email ${site.contactEmail} or message us on Instagram.`} />
+</Layout>

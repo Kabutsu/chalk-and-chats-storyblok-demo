@@ -1,0 +1,31 @@
+---
+// PROTOTYPE — Storyblok block: merch_teaser.
+import Garment from './Garment.astro';
+interface Item { id: string; name: string; price: number; garment: 'tee' | 'hoodie' | 'tank' }
+interface Props { heading: string; dropName: string; closesLabel: string; items: Item[]; tints: string[]; href: string; cta: string }
+const { heading, dropName, closesLabel, items, tints, href, cta } = Astro.props;
+---
+
+<section class="teaser" aria-labelledby="teaser-h">
+	<div class="wrap">
+		<div class="sec-head">
+			<div>
+				<p class="tag">03 / Merch</p>
+				<h2 id="teaser-h" class="h-display">{heading}</h2>
+				<p class="teaser__drop"><strong>{dropName}</strong> · {closesLabel}</p>
+			</div>
+			<a class="btn btn--ink" href={href}>{cta}</a>
+		</div>
+		<ul class="teaser__grid">
+			{
+				items.map((i, n) => (
+					<li class="teaser__item">
+						<Garment kind={i.garment} tint={tints[n % tints.length]} />
+						<p class="teaser__name">{i.name}</p>
+						<p class="price"><span>£</span>{i.price}</p>
+					</li>
+				))
+			}
+		</ul>
+	</div>
+</section>

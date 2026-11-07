@@ -1,0 +1,13 @@
+---
+// PROTOTYPE
+import Layout from '../../../prototype/warm-1/Layout.astro';
+import PageBanner from '../../../prototype/warm-1/PageBanner.astro';
+import EventList from '../../../prototype/warm-1/EventList.astro';
+import { assets } from '../../../prototype/assets';
+import { site } from '../../../prototype/data';
+---
+
+<Layout title="Events">
+	<PageBanner title={site.nav[1].label} image={assets.holdsBlue} alt="Colourful climbing holds on a pale blue wall" />
+	<EventList />
+</Layout>

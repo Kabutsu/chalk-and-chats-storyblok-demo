@@ -1,0 +1,98 @@
+---
+// PROTOTYPE — floating variant switcher. Dev-only; never renders in production builds.
+// Keeps you on the same page (home / events / merch / about) when flipping between variants.
+// On the merch page it also shows Drop-state links (?drop=open|closed|none).
+import { variants } from './data';
+
+const show = import.meta.env.DEV;
+const segments = Astro.url.pathname.replace(/\/+$/, '').split('/').filter(Boolean); // ['prototype', 'warm-1', 'events']
+const current = segments[1] ?? variants[0].key;
+const page = segments[2] ?? '';
+const idx = Math.max(0, variants.findIndex((v) => v.key === current));
+const prev = variants[(idx - 1 + variants.length) % variants.length];
+const next = variants[(idx + 1) % variants.length];
+const hrefFor = (key: string) => `/prototype/${key}${page ? `/${page}` : ''}${Astro.url.search}`;
+const drop = Astro.url.searchParams.get('drop') ?? 'open';
+const dropHref = (state: string) => `${Astro.url.pathname}?drop=${state}`;
+---
+
+{
+	show && (
+		<div class="proto-switcher" data-prev={hrefFor(prev.key)} data-next={hrefFor(next.key)}>
+			{page === 'merch' && (
+				<div class="proto-row" role="group" aria-label="Merch drop state (prototype control)">
+					<span>Drop:</span>
+					{['open', 'closed', 'none'].map((s) => (
+						<a href={dropHref(s)} aria-current={drop === s ? 'true' : undefined}>
+							{s === 'none' ? 'no drop' : s}
+						</a>
+					))}
+				</div>
+			)}
+			<nav class="proto-row" aria-label="Prototype variants">
+				<a href={hrefFor(prev.key)} aria-label={`Previous variant: ${prev.label}`}>←</a>
+				<span class="proto-label">
+					{idx + 1}/{variants.length} — {variants[idx].label}
+				</span>
+				<a href={hrefFor(next.key)} aria-label={`Next variant: ${next.label}`}>→</a>
+			</nav>
+		</div>
+	)
+}
+
+<style is:global>
+	.proto-switcher {
+		position: fixed;
+		left: 50%;
+		bottom: 12px;
+		transform: translateX(-50%);
+		z-index: 2147483647;
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		align-items: center;
+		font: 600 13px/1.2 system-ui, sans-serif;
+	}
+	.proto-switcher .proto-row {
+		display: flex;
+		align-items: center;
+		gap: 4px;
+		background: #111;
+		color: #fff;
+		border-radius: 999px;
+		padding: 4px;
+		box-shadow: 0 4px 18px rgb(0 0 0 / 0.35);
+	}
+	.proto-switcher span {
+		padding: 0 10px;
+		white-space: nowrap;
+	}
+	.proto-switcher a {
+		color: #fff;
+		text-decoration: none;
+		padding: 7px 12px;
+		border-radius: 999px;
+		min-width: 24px;
+		text-align: center;
+	}
+	.proto-switcher a:hover,
+	.proto-switcher a:focus-visible {
+		background: #444;
+		outline: 2px solid #fff;
+	}
+	.proto-switcher a[aria-current='true'] {
+		background: #fff;
+		color: #111;
+	}
+</style>
+
+<script>
+	document.addEventListener('keydown', (e) => {
+		const el = document.querySelector<HTMLElement>('.proto-switcher');
+		if (!el) return;
+		const t = e.target as HTMLElement | null;
+		if (t && (t.closest('input, textarea, select, [contenteditable]') || e.altKey || e.ctrlKey || e.metaKey)) return;
+		if (e.key === 'ArrowLeft' && el.dataset.prev) location.href = el.dataset.prev;
+		if (e.key === 'ArrowRight' && el.dataset.next) location.href = el.dataset.next;
+	});
+</script>

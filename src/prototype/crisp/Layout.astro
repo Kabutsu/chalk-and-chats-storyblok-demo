@@ -1,0 +1,39 @@
+---
+// PROTOTYPE
+// DESIGN THESIS — "Crisp & Sporty": a gear-brand / training-app feel. Near-black ink + white + one strong brand-green
+// block + a single acid-lime accent (always with dark text). Hard edges, thick rules, visible grid lines, big tabular
+// numerals. Structure leans on split screens, a stats strip, numbered steps and a TIMETABLE for events.
+import Switcher from '../Switcher.astro';
+import Header from './Header.astro';
+import Footer from './Footer.astro';
+import './crisp.css';
+import { site } from '../data';
+interface Props { title?: string; description?: string }
+const { title, description = site.tagline } = Astro.props;
+const full = title ? `${title} — ${site.name}` : `${site.name} — ${site.tagline}`;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="robots" content="noindex" />
+		<meta name="description" content={description} />
+		<meta name="theme-color" content="#0E1411" />
+		<title>{full}</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet" />
+		<script is:inline>document.documentElement.classList.add('js');</script>
+	</head>
+	<body class="crisp">
+		<a class="skip" href="#main">Skip to content</a>
+		<Header />
+		<main id="main" tabindex="-1">
+			<slot />
+		</main>
+		<Footer />
+		<Switcher />
+	</body>
+</html>

@@ -1,0 +1,10 @@
+---
+// PROTOTYPE — decorative hold-shaped blob (aria-hidden).
+const { colour = 'var(--butter)', variant = 1, size = 120, style = '' } = Astro.props;
+const d = [
+	'M50 6c20-2 40 12 43 32s-8 38-26 50S28 98 14 80 0 40 14 22 34 8 50 6z',
+	'M30 10c18-8 44-2 56 16s6 40-10 54-40 16-56 2S-4 46 6 28 18 16 30 10z',
+	'M54 4c24 2 42 20 40 44S78 94 52 96 8 80 6 54 28 2 54 4z',
+][variant - 1];
+---
+<svg class="blob" viewBox="0 0 100 100" width={size} height={size} aria-hidden="true" focusable="false" style={style}><path d={d} fill={colour} stroke="#1e2b19" stroke-width="2.5" /></svg>

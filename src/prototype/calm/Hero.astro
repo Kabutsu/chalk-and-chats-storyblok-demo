@@ -1,0 +1,34 @@
+---
+// PROTOTYPE — throwaway. Future Storyblok block: hero.
+import { Image } from 'astro:assets';
+import { assets } from '../assets';
+interface Props {
+	hero: {
+		eyebrow: string;
+		headline: string;
+		subheadline: string;
+		primaryCta: { label: string; url: string };
+		secondaryCta: { label: string; url: string; note?: string };
+		imageAlt: string;
+	};
+}
+const { hero } = Astro.props;
+---
+
+<section class="hero wrap" aria-labelledby="hero-h">
+	<p class="caps">{hero.eyebrow}</p>
+	<h1 id="hero-h">{hero.headline}</h1>
+	<p class="hero__sub">{hero.subheadline}</p>
+	<div class="hero__ctas">
+		<a class="btn" href={hero.primaryCta.url}>{hero.primaryCta.label}</a>
+		<a class="link" href={hero.secondaryCta.url}>
+			<span>
+				{hero.secondaryCta.label}
+				{hero.secondaryCta.note && <span class="link-note">{hero.secondaryCta.note}</span>}
+			</span>
+		</a>
+	</div>
+	<figure class="hero__photo">
+		<Image src={assets.chalkHand} alt={hero.imageAlt} width={704} height={528} widths={[352, 704]} sizes="(min-width: 25rem) 22rem, 90vw" loading="eager" />
+	</figure>
+</section>

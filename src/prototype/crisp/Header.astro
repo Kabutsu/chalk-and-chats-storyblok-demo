@@ -1,0 +1,80 @@
+---
+// PROTOTYPE
+import { Image } from 'astro:assets';
+import { site } from '../data';
+import { assets } from '../assets';
+const base = '/prototype/crisp';
+const path = Astro.url.pathname.replace(/\/+$/, '');
+const items = site.nav.map((n) => ({ ...n, href: n.slug ? `${base}/${n.slug}` : base }));
+---
+
+<header class="c-header" data-header>
+	<div class="c-header__bar">
+		<a class="c-brand" href={base}>
+			<Image src={assets.logo} alt="" width={80} height={80} class="c-brand__logo" loading="eager" />
+			<span class="c-brand__name">{site.name}<span class="sr"> home</span></span>
+		</a>
+		<button type="button" class="c-menu-btn" aria-expanded="false" aria-controls="c-nav" data-menu-btn>
+			<span data-menu-label>Menu</span>
+			<span class="c-menu-btn__icon" aria-hidden="true"><i></i><i></i><i></i></span>
+		</button>
+		<nav class="c-nav" id="c-nav" aria-label="Main" data-nav>
+			<ul>
+				{
+					items.map((i) => (
+						<li>
+							<a href={i.href} aria-current={path === i.href ? 'page' : undefined}>
+								{i.label}
+							</a>
+						</li>
+					))
+				}
+				<li class="c-nav__cta">
+					<a class="btn btn--lime" href={site.whatsappUrl} rel="noopener">Join the WhatsApp group</a>
+				</li>
+			</ul>
+		</nav>
+	</div>
+</header>
+
+<script>
+	const header = document.querySelector<HTMLElement>('[data-header]');
+	const btn = header?.querySelector<HTMLButtonElement>('[data-menu-btn]');
+	const nav = header?.querySelector<HTMLElement>('[data-nav]');
+	const label = header?.querySelector<HTMLElement>('[data-menu-label]');
+	if (header && btn && nav && label) {
+		const mq = window.matchMedia('(min-width: 60rem)');
+		const set = (open: boolean, focusBtn = false) => {
+			btn.setAttribute('aria-expanded', String(open));
+			label.textContent = open ? 'Close' : 'Menu';
+			header.classList.toggle('is-open', open);
+			document.documentElement.classList.toggle('menu-open', open);
+			if (open) nav.querySelector<HTMLElement>('a')?.focus();
+			else if (focusBtn) btn.focus();
+		};
+		btn.addEventListener('click', () => set(btn.getAttribute('aria-expanded') !== 'true'));
+		nav.addEventListener('click', (e) => {
+			if ((e.target as HTMLElement).closest('a')) set(false);
+		});
+		header.addEventListener('keydown', (e) => {
+			if (btn.getAttribute('aria-expanded') !== 'true') return;
+			if (e.key === 'Escape') {
+				e.preventDefault();
+				set(false, true);
+			}
+			if (e.key === 'Tab') {
+				const f = [...header.querySelectorAll<HTMLElement>('a[href], button')].filter((el) => el.offsetParent !== null);
+				const first = f[0];
+				const last = f[f.length - 1];
+				if (e.shiftKey && document.activeElement === first) {
+					e.preventDefault();
+					last.focus();
+				} else if (!e.shiftKey && document.activeElement === last) {
+					e.preventDefault();
+					first.focus();
+				}
+			}
+		});
+		mq.addEventListener('change', () => set(false));
+	}
+</script>

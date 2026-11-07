@@ -1,0 +1,31 @@
+---
+// PROTOTYPE — throwaway. Future Storyblok block: upcoming_events (plain ruled agenda).
+import type { ClubEvent } from '../data';
+import { fmtDay, fmtTimes } from './format';
+interface Props {
+	events: ClubEvent[];
+	eventsHref: string;
+}
+const { events, eventsHref } = Astro.props;
+---
+
+<section class="sec wrap" aria-labelledby="up-h">
+	<div class="sec__head"><span class="sec__num" aria-hidden="true"></span></div>
+	<h2 id="up-h">Coming up</h2>
+	<ol class="agenda">
+		{
+			events.map((e) => (
+				<li>
+					<span class="agenda__date">
+						<time datetime={e.start}>{fmtDay(e.start)}</time>, {e.start.slice(11, 16)}
+					</span>
+					<a class="agenda__title" href={`${eventsHref}#${e.id}`}>
+						{e.title}
+					</a>
+					<span class="agenda__wall">{e.place.name}</span>
+				</li>
+			))
+		}
+	</ol>
+	<p style="margin-top:1rem"><a class="link" href={eventsHref}>All events</a></p>
+</section>

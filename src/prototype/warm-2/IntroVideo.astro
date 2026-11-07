@@ -1,0 +1,34 @@
+---
+// PROTOTYPE — Storyblok blocks: intro (copy tile) + welcome video (portrait facade tile).
+import { Image } from 'astro:assets';
+import { assets } from '../assets';
+const { intro } = Astro.props;
+---
+<section class="tile t-intro tile--soft" aria-labelledby="intro-h">
+	<h2 id="intro-h">{intro.heading}</h2>
+	{intro.body.map((p: string) => <p>{p}</p>)}
+</section>
+<section class="tile t-video" aria-label="Welcome video" data-video>
+	<div class="video-frame">
+		<button type="button" aria-label={intro.videoLabel}>
+			<Image src={assets.videoPoster} alt="" width={360} height={640} loading="lazy" />
+			<span class="play"><span aria-hidden="true">▶</span> {intro.videoLabel}</span>
+		</button>
+	</div>
+	<p class="video-meta">{intro.videoDurationLabel}</p>
+	<script define:vars={{ src: assets.videoUrl, poster: assets.videoPoster.src }}>
+		const root = document.currentScript.closest('[data-video]');
+		root.querySelector('button').addEventListener('click', () => {
+			const frame = root.querySelector('.video-frame');
+			const v = document.createElement('video');
+			v.controls = true;
+			v.preload = 'none';
+			v.poster = poster;
+			v.playsInline = true;
+			v.src = src;
+			frame.replaceChildren(v);
+			v.focus();
+			v.play().catch(() => {});
+		});
+	</script>
+</section>

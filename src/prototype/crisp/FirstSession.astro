@@ -1,0 +1,43 @@
+---
+// PROTOTYPE — Storyblok block: first_session (numbered steps 01–04, cost, kit note).
+interface Props {
+	heading: string;
+	intro: string;
+	steps: { title: string; body: string }[];
+	cost: string;
+	kit: string;
+	bookingUrl: string;
+	bookingLabel: string;
+}
+const { heading, intro, steps, cost, kit, bookingUrl, bookingLabel } = Astro.props;
+---
+
+<section class="steps on-dark" aria-labelledby="steps-h">
+	<div class="wrap">
+		<p class="tag tag--lime">04 / Start here</p>
+		<h2 id="steps-h" class="h-display">{heading}</h2>
+		<p class="steps__intro">{intro}</p>
+		<ol class="steps__list">
+			{
+				steps.map((s, i) => (
+					<li class="step">
+						<span class="step__n" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+						<h3 class="step__t">{s.title}</h3>
+						<p>{s.body}</p>
+					</li>
+				))
+			}
+		</ol>
+		<div class="steps__facts">
+			<div>
+				<h3>Cost</h3>
+				<p>{cost}</p>
+			</div>
+			<div>
+				<h3>Kit</h3>
+				<p>{kit}</p>
+			</div>
+			<a class="btn btn--lime" href={bookingUrl} target="_blank" rel="noopener">{bookingLabel}<span class="sr"> (opens in a new tab)</span></a>
+		</div>
+	</div>
+</section>

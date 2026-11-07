@@ -1,0 +1,28 @@
+---
+// PROTOTYPE — warm-2 home (bento grid)
+import Layout from '../../../prototype/warm-2/Layout.astro';
+import Hero from '../../../prototype/warm-2/Hero.astro';
+import IntroVideo from '../../../prototype/warm-2/IntroVideo.astro';
+import Polaroid from '../../../prototype/warm-2/Polaroid.astro';
+import UpcomingEvents from '../../../prototype/warm-2/UpcomingEvents.astro';
+import MerchTeaser from '../../../prototype/warm-2/MerchTeaser.astro';
+import FirstSessionTile from '../../../prototype/warm-2/FirstSessionTile.astro';
+import InstagramTile from '../../../prototype/warm-2/InstagramTile.astro';
+import { site, hero, intro, firstSession, merch, getEvents } from '../../../prototype/data';
+import { assets } from '../../../prototype/assets';
+const now = new Date();
+const p = (n: number) => String(n).padStart(2, '0');
+const stamp = `${now.getFullYear()}-${p(now.getMonth() + 1)}-${p(now.getDate())}T${p(now.getHours())}:${p(now.getMinutes())}`;
+const next = getEvents().filter((e) => e.start >= stamp).slice(0, 4);
+---
+<Layout>
+	<div class="bento">
+		<Hero hero={hero} />
+		<IntroVideo intro={intro} />
+		<div class="tile t-photo"><Polaroid image={assets.chalkHand} alt={hero.imageAlt} caption={site.tagline} tilt={-2} /></div>
+		<FirstSessionTile firstSession={firstSession} />
+		<UpcomingEvents events={next} />
+		<MerchTeaser merch={merch} />
+		<InstagramTile site={site} />
+	</div>
+</Layout>

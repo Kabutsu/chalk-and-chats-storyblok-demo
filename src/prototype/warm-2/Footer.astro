@@ -1,0 +1,16 @@
+---
+// PROTOTYPE — footer with WhatsApp CTA.
+import { site } from '../data';
+const base = '/prototype/warm-2';
+---
+<footer class="foot">
+	<h2>{site.name}</h2>
+	<p>{site.tagline}</p>
+	<a class="btn btn--butter" href={site.whatsappUrl}>Join the WhatsApp group</a>
+	<ul>
+		<li><a href={site.instagramUrl}>Instagram {site.instagramHandle}</a></li>
+		<li><a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a></li>
+		{site.nav.map((n) => <li><a href={`${base}${n.slug ? '/' + n.slug : '/'}`}>{n.label}</a></li>)}
+	</ul>
+	<p>© {new Date().getFullYear()} {site.name}</p>
+</footer>

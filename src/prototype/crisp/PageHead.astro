@@ -1,0 +1,13 @@
+---
+// PROTOTYPE — page title block (the single h1) for inner pages.
+interface Props { kicker: string; title: string; lead?: string }
+const { kicker, title, lead } = Astro.props;
+---
+
+<div class="pagehead on-dark">
+	<div class="wrap">
+		<p class="tag tag--lime">{kicker}</p>
+		<h1 class="pagehead__title">{title}</h1>
+		{lead && <p class="pagehead__lead">{lead}</p>}
+	</div>
+</div>

@@ -1,0 +1,13 @@
+---
+// PROTOTYPE — warm-2 merch (?drop=open|closed|none)
+import Layout from '../../../prototype/warm-2/Layout.astro';
+import MerchGrid from '../../../prototype/warm-2/MerchGrid.astro';
+import { merch, parseDropState } from '../../../prototype/data';
+const state = parseDropState(Astro.url.searchParams.get('drop'));
+---
+<Layout title="Merch">
+	<div class="page-head">
+		<h1>Merch</h1>
+	</div>
+	<MerchGrid merch={merch} state={state} />
+</Layout>

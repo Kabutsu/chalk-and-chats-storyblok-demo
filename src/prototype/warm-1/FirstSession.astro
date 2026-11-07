@@ -1,0 +1,19 @@
+---
+// PROTOTYPE — Storyblok block: first_session
+import { firstSession } from '../data';
+const { data = firstSession } = Astro.props;
+---
+
+<section class="band band--cream2" aria-labelledby="fs-h">
+	<div class="wrap">
+		<h2 id="fs-h">{data.heading}</h2>
+		<p class="lede">{data.intro}</p>
+		<ol class="steps">
+			{data.steps.map((s: any) => <li><h3>{s.title}</h3><p>{s.body}</p></li>)}
+		</ol>
+		<div class="cost-card">
+			<p><strong>Cost:</strong> {data.cost}</p>
+			<p><strong>Kit:</strong> {data.kit}</p>
+		</div>
+	</div>
+</section>

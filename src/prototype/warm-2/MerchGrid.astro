@@ -1,0 +1,102 @@
+---
+// PROTOTYPE — Storyblok block: merch grid with three Drop states (open / closed / none). Checkout is a stub.
+import Garment from './Garment.astro';
+import { site } from '../data';
+const { merch, state } = Astro.props;
+const lum = (hex: string) => {
+	const c = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255).map((v) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
+	return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+};
+const markFor = (hex: string) => (lum(hex) > 0.4 ? '#437032' : '#fbf5e6');
+const tilts = [-2, 2, -1];
+---
+<div data-merch>
+	{state === 'open' && (
+		<>
+			<section class="tile tile--green drop-banner on-dark" aria-labelledby="drop-h">
+				<h2 id="drop-h">{merch.drop.name} is open</h2>
+				<p>
+					<span class="countdown" data-close={merch.drop.closesIso}>{merch.drop.closesLabel}</span>
+				</p>
+				<p>{merch.drop.note}</p>
+				<p><strong>Prices are all-inclusive, no shipping.</strong> {merch.drop.collection}</p>
+			</section>
+			<h2 class="sr">Products</h2>
+			<div class="scroller" role="region" aria-label="Products (scrolls sideways)" tabindex="0">
+				{merch.items.map((it: any, i: number) => (
+					<article class="card" data-card data-name={it.name} style={`--garment:${merch.colours[0].hex};--mark:${markFor(merch.colours[0].hex)};--tilt:${tilts[i % 3]}deg`}>
+						<div class="art"><Garment kind={it.garment} /></div>
+						<h3><span>{it.name}</span><span class="price">£{it.price}</span></h3>
+						<p>{it.blurb}</p>
+						<fieldset>
+							<legend>Colour</legend>
+							<div class="opts">
+								{merch.colours.map((c: any, ci: number) => (
+									<label class="opt"><input type="radio" name={`colour-${it.id}`} value={c.name} data-hex={c.hex} data-mark={markFor(c.hex)} checked={ci === 0} /><span><span class="dot" style={`background:${c.hex};border:2px solid #1e2b19`}></span>{c.name}</span></label>
+								))}
+							</div>
+						</fieldset>
+						<fieldset>
+							<legend>Size</legend>
+							<div class="opts">
+								{merch.sizes.map((s: string, si: number) => (
+									<label class="opt"><input type="radio" name={`size-${it.id}`} value={s} checked={si === 1} /><span>{s}</span></label>
+								))}
+							</div>
+						</fieldset>
+						<button type="button" class="btn btn--green" data-order>Order · £{it.price}</button>
+						<p class="order-msg" role="status" aria-live="polite" data-msg></p>
+					</article>
+				))}
+			</div>
+		</>
+	)}
+
+	{state === 'closed' && (
+		<section class="tile tile--butter msg-tile" aria-labelledby="drop-h">
+			<div class="sold" aria-hidden="true">
+				{merch.items.map((it: any, i: number) => <figure><Garment kind={it.garment} colour={merch.colours[i % 3].hex} mark="#fbf5e6" /></figure>)}
+			</div>
+			<h2 id="drop-h">{merch.drop.name} is sold out</h2>
+			<p>This round is closed and we are busy getting every order made. Sold out for now, so nothing more to order.</p>
+			<p><strong>{merch.drop.collection}</strong></p>
+			<div class="ctas"><div><a class="btn btn--green" href={site.whatsappUrl}>Join the WhatsApp group</a><p class="cta-note">We announce the next Drop there first.</p></div></div>
+		</section>
+	)}
+
+	{state === 'none' && (
+		<section class="tile tile--sky msg-tile" aria-labelledby="drop-h">
+			<Garment kind="tee" colour="#fbf5e6" mark="#437032" />
+			<h2 id="drop-h">No Drop planned right now</h2>
+			<p>We only make merch in occasional Drops, and there is not one on the horizon yet. Pop into the WhatsApp group and you will hear first when the next one is on.</p>
+			<div class="ctas"><div><a class="btn btn--green" href={site.whatsappUrl}>Join the WhatsApp group</a></div></div>
+		</section>
+	)}
+</div>
+
+<script>
+	const root = document.querySelector<HTMLElement>('[data-merch]')!;
+	root.querySelectorAll<HTMLElement>('[data-card]').forEach((card) => {
+		const val = (n: string) => card.querySelector<HTMLInputElement>(`input[name^=${n}]:checked`)!;
+		card.addEventListener('change', () => {
+			const c = val('colour');
+			card.style.setProperty('--garment', c.dataset.hex!);
+			card.style.setProperty('--mark', c.dataset.mark!);
+		});
+		card.querySelector('[data-order]')!.addEventListener('click', () => {
+			card.querySelector('[data-msg]')!.textContent = `Checkout isn't connected in this prototype. (You picked: ${card.dataset.name}, ${val('colour').value}, size ${val('size').value}.)`;
+		});
+	});
+	const cd = root.querySelector<HTMLElement>('[data-close]');
+	if (cd) {
+		const end = new Date(cd.dataset.close!).getTime();
+		const tick = () => {
+			const ms = end - Date.now();
+			if (ms <= 0) return;
+			const d = Math.floor(ms / 864e5), h = Math.floor((ms % 864e5) / 36e5);
+			cd.textContent = `Orders close in ${d} days ${h} hours`;
+		};
+		tick();
+		setInterval(tick, 60000);
+	}
+</script>

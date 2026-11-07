@@ -1,0 +1,13 @@
+---
+// PROTOTYPE — warm-2 events
+import Layout from '../../../prototype/warm-2/Layout.astro';
+import EventList from '../../../prototype/warm-2/EventList.astro';
+import { getEvents, eventTypes } from '../../../prototype/data';
+---
+<Layout title="Events">
+	<div class="page-head">
+		<h1>Events</h1>
+		<p>Sessions, socials and the odd trip. Everything coming up, week by week.</p>
+	</div>
+	<EventList events={getEvents()} types={eventTypes} />
+</Layout>

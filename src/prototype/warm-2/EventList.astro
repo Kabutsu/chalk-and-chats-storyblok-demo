@@ -1,0 +1,187 @@
+---
+// PROTOTYPE — Storyblok block: event list. Agenda (grouped by week, default, no-JS) + month grid (JS toggle) + type filter.
+import { Image } from 'astro:assets';
+import { icsHref, type ClubEvent } from '../data';
+import { assets } from '../assets';
+import TypeBadge from './TypeBadge.astro';
+import { dayName, dayNum, monthShort, longDate, timeRange, weekKey, weekLabel, monthTitle, monthWeeks, typeStyle } from './format';
+const { events, types } = Astro.props as { events: ClubEvent[]; types: string[] };
+
+const weeks: { key: string; items: ClubEvent[] }[] = [];
+for (const e of events) {
+	const k = weekKey(e.start);
+	let w = weeks.find((x) => x.key === k);
+	if (!w) weeks.push((w = { key: k, items: [] }));
+	w.items.push(e);
+}
+const byDate = new Map<string, ClubEvent[]>();
+for (const e of events) {
+	const k = e.start.slice(0, 10);
+	byDate.set(k, [...(byDate.get(k) ?? []), e]);
+}
+const monthKeys = [...new Set(events.map((e) => e.start.slice(0, 7)))];
+const dows = [['Mon', 'Monday'], ['Tue', 'Tuesday'], ['Wed', 'Wednesday'], ['Thu', 'Thursday'], ['Fri', 'Friday'], ['Sat', 'Saturday'], ['Sun', 'Sunday']];
+---
+<div data-eventlist>
+	<div class="controls js-only" style="flex-direction:column">
+		<fieldset>
+			<legend>View</legend>
+			<div class="chips">
+				<button type="button" class="chip" data-view="list" aria-pressed="true">Agenda list</button>
+				<button type="button" class="chip" data-view="month" aria-pressed="false">Month grid</button>
+			</div>
+		</fieldset>
+		<fieldset>
+			<legend>Filter by type</legend>
+			<div class="chips">
+				<button type="button" class="chip" data-type="all" aria-pressed="true">All</button>
+				{types.map((t) => <button type="button" class="chip" data-type={t} aria-pressed="false"><span aria-hidden="true">{typeStyle[t as keyof typeof typeStyle].glyph}</span> {t}</button>)}
+			</div>
+		</fieldset>
+		<p class="status" role="status" aria-live="polite" data-status></p>
+	</div>
+
+	<div data-pane="list">
+		{weeks.map((w) => (
+			<section class="week" data-week aria-labelledby={`wk-${w.key}`}>
+				<h2 id={`wk-${w.key}`}>{weekLabel(w.key)}</h2>
+				<ul class="ev-list">
+					{w.items.map((e) => (
+						<li>
+							<article class="ev" id={e.id} data-ev data-type={e.type} tabindex="-1">
+								<div class="datebadge"><span class="dow">{dayName(e.start)}</span><span class="num">{dayNum(e.start)}</span><span class="mon">{monthShort(e.start)}</span></div>
+								<div>
+									<TypeBadge type={e.type} />
+									<h3>{e.title}</h3>
+									<ul class="ev-meta">
+										<li><time datetime={e.start}>{longDate(e.start)}, {timeRange(e)}</time></li>
+										<li>{e.place.name}, {e.place.area} · <a href={e.place.mapUrl}>Map<span class="sr"> to {e.place.name}</span></a></li>
+									</ul>
+								</div>
+								<details>
+									<summary>Details<span class="sr">: {e.title}</span></summary>
+									<div class="ev-body">
+										<div>
+											<p>{e.description}</p>
+											<p><strong>Cost:</strong> {e.cost}</p>
+											{e.recurrence && <p class="ev-note">{e.recurrence}</p>}
+										</div>
+										{e.image && <figure class="polaroid"><Image src={assets[e.image]} alt="" width={300} height={300} loading="lazy" /></figure>}
+										<div class="ev-actions">
+											{e.bookingUrl && <a class="btn btn--green" href={e.bookingUrl}>Book on the wall's website<span class="sr"> ({e.title}, external)</span></a>}
+											<a class="btn" href={icsHref(e)} download={`${e.id}.ics`}>Add to calendar<span class="sr"> ({e.title})</span></a>
+										</div>
+									</div>
+								</details>
+							</article>
+						</li>
+					))}
+				</ul>
+			</section>
+		))}
+		<p class="status" data-empty hidden>No events of that type coming up.</p>
+	</div>
+
+	<div data-pane="month" hidden>
+		<div class="monthnav">
+			<button type="button" class="btn" data-prev aria-label="Previous month">←</button>
+			<p aria-hidden="true" data-monthlabel></p>
+			<button type="button" class="btn" data-next aria-label="Next month">→</button>
+		</div>
+		{monthKeys.map((mk, i) => (
+			<table class="cal" data-month={i} hidden={i !== 0 ? true : undefined}>
+				<caption>{monthTitle(mk)}</caption>
+				<thead>
+					<tr>{dows.map(([s, f]) => <th scope="col"><abbr title={f}>{s}</abbr></th>)}</tr>
+				</thead>
+				<tbody>
+					{monthWeeks(mk).map((row) => (
+						<tr>
+							{row.map((d) =>
+								d === null ? <td class="pad"></td> : (
+									<td>
+										<span class="dn"><span class="sr">{longDate(d)}</span><span aria-hidden="true">{Number(d.slice(8))}</span></span>
+										<ul>
+											{(byDate.get(d) ?? []).map((e) => (
+												<li data-mev data-type={e.type}>
+													<a class={typeStyle[e.type].cls} href={`#${e.id}`} data-open={e.id}>
+														<span aria-hidden="true">{typeStyle[e.type].glyph}</span>
+														<span class="t" aria-hidden="true">{e.title}</span>
+														<span class="sr">{e.title}, {e.type}, {e.start.slice(11)}</span>
+													</a>
+												</li>
+											))}
+										</ul>
+									</td>
+								)
+							)}
+						</tr>
+					))}
+				</tbody>
+			</table>
+		))}
+		<ul class="legend" aria-label="Key">
+			{types.map((t) => <li><TypeBadge type={t} /></li>)}
+		</ul>
+	</div>
+</div>
+
+<script>
+	const root = document.querySelector<HTMLElement>('[data-eventlist]')!;
+	const $$ = <T extends HTMLElement>(s: string) => Array.from(root.querySelectorAll<T>(s));
+	const status = root.querySelector<HTMLElement>('[data-status]')!;
+	const empty = root.querySelector<HTMLElement>('[data-empty]')!;
+	const label = root.querySelector<HTMLElement>('[data-monthlabel]')!;
+	const prev = root.querySelector<HTMLButtonElement>('[data-prev]')!;
+	const next = root.querySelector<HTMLButtonElement>('[data-next]')!;
+	const tables = $$<HTMLTableElement>('table[data-month]');
+	let type = 'all', month = 0;
+	const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+	function press(sel: string, attr: string, val: string) {
+		$$<HTMLButtonElement>(sel).forEach((b) => b.setAttribute('aria-pressed', String(b.dataset[attr] === val)));
+	}
+	function apply() {
+		let n = 0;
+		$$('[data-ev]').forEach((e) => { const show = type === 'all' || e.dataset.type === type; e.closest('li')!.hidden = !show; if (show) n++; });
+		$$('[data-mev]').forEach((e) => (e.hidden = !(type === 'all' || e.dataset.type === type)));
+		$$('[data-week]').forEach((w) => (w.hidden = !w.querySelector('li:not([hidden])')));
+		empty.hidden = n > 0;
+		status.textContent = `Showing ${n} ${n === 1 ? 'event' : 'events'}${type === 'all' ? '' : ' of type ' + type}.`;
+	}
+	function showMonth() {
+		tables.forEach((t, i) => (t.hidden = i !== month));
+		label.textContent = tables[month].caption!.textContent;
+		prev.disabled = month === 0;
+		next.disabled = month === tables.length - 1;
+	}
+	function setView(v: string) {
+		press('[data-view]', 'view', v);
+		root.querySelector<HTMLElement>('[data-pane=list]')!.hidden = v !== 'list';
+		root.querySelector<HTMLElement>('[data-pane=month]')!.hidden = v !== 'month';
+	}
+	root.addEventListener('click', (ev) => {
+		const t = ev.target as HTMLElement;
+		const view = t.closest<HTMLElement>('[data-view]');
+		const flt = t.closest<HTMLElement>('button[data-type]');
+		const open = t.closest<HTMLElement>('[data-open]');
+		if (view) setView(view.dataset.view!);
+		if (flt) { type = flt.dataset.type!; press('button[data-type]', 'type', type); apply(); }
+		if (t.closest('[data-prev]') && month > 0) { month--; showMonth(); }
+		if (t.closest('[data-next]') && month < tables.length - 1) { month++; showMonth(); }
+		if (open) {
+			ev.preventDefault();
+			if (type !== 'all') { type = 'all'; press('button[data-type]', 'type', 'all'); apply(); }
+			setView('list');
+			const art = document.getElementById(open.dataset.open!);
+			art?.querySelector('details')?.setAttribute('open', '');
+			art?.scrollIntoView({ block: 'center', behavior: reduce ? 'auto' : 'smooth' });
+			art?.focus({ preventScroll: true });
+		}
+	});
+	showMonth();
+	apply();
+	// Deep links like /events#wed-2026-11-11 (from the home page) open the matching event.
+	const h = decodeURIComponent(location.hash.slice(1));
+	if (h) document.getElementById(h)?.querySelector('details')?.setAttribute('open', '');
+</script>

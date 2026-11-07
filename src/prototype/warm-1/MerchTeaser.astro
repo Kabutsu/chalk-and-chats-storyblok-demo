@@ -1,0 +1,23 @@
+---
+// PROTOTYPE — Storyblok block: merch_teaser
+import { merch } from '../data';
+import Garment from './Garment.astro';
+import { href, inkFor } from './format';
+---
+
+<section class="band" aria-labelledby="merch-t-h">
+	<div class="wrap photo-split">
+		<div>
+			<p class="eyebrow">{merch.drop.name}</p>
+			<h2 id="merch-t-h">Wear the chalk</h2>
+			<p class="lede">{merch.drop.note}</p>
+			<a class="btn btn--primary" href={href('merch')}>See the merch</a>
+		</div>
+		<ul class="teaser">
+			{merch.items.map((it, i) => {
+				const c = merch.colours[i % merch.colours.length].hex;
+				return <li><Garment kind={it.garment} colour={c} ink={inkFor(c)} />{it.name}</li>;
+			})}
+		</ul>
+	</div>
+</section>

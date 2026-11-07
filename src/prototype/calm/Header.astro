@@ -1,0 +1,67 @@
+---
+// PROTOTYPE — throwaway. Menu is a native <details> disclosure, so it works without JS.
+import { Image } from 'astro:assets';
+import { site, hero } from '../data';
+import { assets } from '../assets';
+
+const base = '/prototype/calm';
+const path = Astro.url.pathname.replace(/\/+$/, '');
+const items = site.nav.map((n) => {
+	const href = n.slug ? `${base}/${n.slug}` : base;
+	return { ...n, href, current: path === href };
+});
+---
+
+<header class="site-header">
+	<div class="wrap site-header__row">
+		<a class="logo" href={base}>
+			<Image src={assets.logo} alt="Chalk and Chats — home" width={104} />
+		</a>
+		<div class="site-header__right">
+			<a class="site-header__cta" href={site.whatsappUrl}>{hero.primaryCta.label}</a>
+			<details class="menu">
+				<summary>
+					<span class="when-closed">Menu</span><span class="when-open">Close</span>
+				</summary>
+				<nav class="menu__panel" aria-label="Main">
+					<div class="wrap">
+						<ul>
+							{
+								items.map((i) => (
+									<li>
+										<a href={i.href} aria-current={i.current ? 'page' : undefined}>
+											{i.label}
+										</a>
+									</li>
+								))
+							}
+						</ul>
+					</div>
+				</nav>
+			</details>
+		</div>
+	</div>
+</header>
+
+<script>
+	const menu = document.querySelector<HTMLDetailsElement>('.menu');
+	const summary = menu?.querySelector('summary');
+	if (menu && summary) {
+		menu.addEventListener('toggle', () => {
+			if (menu.open) menu.querySelector<HTMLElement>('nav a')?.focus();
+		});
+		document.addEventListener('keydown', (e) => {
+			if (e.key === 'Escape' && menu.open) {
+				menu.open = false;
+				summary.focus();
+			}
+		});
+		document.addEventListener('click', (e) => {
+			if (menu.open && !menu.contains(e.target as Node)) menu.open = false;
+		});
+		menu.addEventListener('focusout', (e) => {
+			const next = (e as FocusEvent).relatedTarget as Node | null;
+			if (menu.open && next && !menu.contains(next)) menu.open = false;
+		});
+	}
+</script>

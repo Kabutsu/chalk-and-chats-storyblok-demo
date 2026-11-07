@@ -1,0 +1,188 @@
+---
+// PROTOTYPE — Storyblok block: merch_grid. Handles the three Drop states: open | closed | none.
+import Garment from './Garment.astro';
+import type { DropState } from '../data';
+interface Item { id: string; name: string; price: number; blurb: string; garment: 'tee' | 'hoodie' | 'tank' }
+interface Props {
+	state: DropState;
+	items: Item[];
+	colours: { name: string; hex: string }[];
+	sizes: string[];
+	drop: { name: string; closesLabel: string; closesIso: string; collection: string; note: string };
+	whatsappUrl: string;
+}
+const { state, items, colours, sizes, drop, whatsappUrl } = Astro.props;
+const defaultSize = sizes[Math.min(1, sizes.length - 1)];
+---
+
+{
+	state === 'none' && (
+		<section class="nodrop on-green" aria-labelledby="nodrop-h">
+			<div class="wrap">
+				<p class="tag tag--lime">00 / Merch</p>
+				<h2 id="nodrop-h" class="h-display">No Drop planned right now</h2>
+				<p class="nodrop__p">We only run a merch Drop when enough of us want one, so nothing is on sale at the moment. The best way to hear first is the WhatsApp group: say what you would like to see and we will plan the next round around it.</p>
+				<a class="btn btn--lime btn--xl" href={whatsappUrl} rel="noopener">Join the WhatsApp group</a>
+			</div>
+		</section>
+	)
+}
+
+{
+	state !== 'none' && (
+		<section class="drop" aria-labelledby="drop-h" data-drop={state}>
+			<div class="drop__head on-dark">
+				<div class="wrap drop__head-inner">
+					<div>
+						<p class="tag tag--lime">{state === 'open' ? 'Drop open' : 'Drop closed'}</p>
+						<h2 id="drop-h" class="h-display">{drop.name}</h2>
+					</div>
+					{state === 'open' ? (
+						<div class="drop__close">
+							<p class="drop__closes">{drop.closesLabel}</p>
+							<p class="drop__count" data-countdown={drop.closesIso} hidden></p>
+						</div>
+					) : (
+						<div class="drop__soldout">
+							<p class="drop__stamp">Sold out</p>
+							<p>This round is closed and orders are being made. Thank you!</p>
+						</div>
+					)}
+				</div>
+			</div>
+
+			<div class="wrap">
+				<ul class="pgrid">
+					{
+						items.map((it) => (
+							<li class="ptile" data-product data-name={it.name} data-price={it.price} data-state={state}>
+								<div class="ptile__art" style={`--tint:${colours[0].hex}`}>
+									<Garment kind={it.garment} tint={colours[0].hex} />
+									{state === 'closed' && <span class="ptile__flag">Sold out</span>}
+								</div>
+								<div class="ptile__body">
+									<h3 class="ptile__name">{it.name}</h3>
+									<p class="price price--xl"><span>£</span>{it.price}</p>
+									<p class="ptile__blurb">{it.blurb}</p>
+									{state === 'open' && (
+										<form class="picker" onsubmit="return false">
+											<fieldset>
+												<legend>Colour: <span data-colour-name>{colours[0].name}</span></legend>
+												<div class="swatches">
+													{colours.map((c, n) => (
+														<label class="swatch">
+															<input type="radio" name={`${it.id}-colour`} value={c.name} data-hex={c.hex} checked={n === 0} />
+															<span class="swatch__chip" style={`background:${c.hex}`}></span>
+															<span class="sr">{c.name}</span>
+														</label>
+													))}
+												</div>
+											</fieldset>
+											<fieldset>
+												<legend>Size</legend>
+												<div class="segs">
+													{sizes.map((s) => (
+														<label class="seg">
+															<input type="radio" name={`${it.id}-size`} value={s} checked={s === defaultSize} />
+															<span>{s}</span>
+														</label>
+													))}
+												</div>
+											</fieldset>
+											<button type="button" class="btn btn--lime btn--block" data-order>Order<span class="sr"> {it.name}</span></button>
+											<p class="order-msg" role="status" data-msg></p>
+										</form>
+									)}
+									{state === 'closed' && <p class="ptile__closed">Sold out for this round</p>}
+								</div>
+							</li>
+						))
+					}
+				</ul>
+
+				<dl class="info">
+					<div>
+						<dt>Collection</dt>
+						<dd>{drop.collection}</dd>
+					</div>
+					<div>
+						<dt>{state === 'open' ? 'How it works' : 'What happens next'}</dt>
+						<dd>{drop.note}</dd>
+					</div>
+					<div>
+						<dt>Prices</dt>
+						<dd>Prices include everything. No shipping: you pick your order up at a Session.</dd>
+					</div>
+				</dl>
+			</div>
+
+			{
+				state === 'open' && (
+					<div class="order-bar" data-order-bar hidden>
+						<p class="order-bar__sum" data-bar-sum></p>
+						<button type="button" class="btn btn--lime" data-bar-order>Order</button>
+						<p class="order-bar__msg" role="status" data-bar-msg></p>
+					</div>
+				)
+			}
+		</section>
+	)
+}
+
+<script>
+	const MSG = "Checkout isn't connected in this prototype.";
+	const tiles = [...document.querySelectorAll<HTMLElement>('[data-product][data-state="open"]')];
+	if (tiles.length) {
+		const bar = document.querySelector<HTMLElement>('[data-order-bar]');
+		const sum = bar?.querySelector<HTMLElement>('[data-bar-sum]');
+		const barMsg = bar?.querySelector<HTMLElement>('[data-bar-msg]');
+		let current = tiles[0];
+		const val = (t: HTMLElement, n: string) => t.querySelector<HTMLInputElement>(`input[name$="-${n}"]:checked`);
+		const refresh = (t: HTMLElement) => {
+			const c = val(t, 'colour');
+			const s = val(t, 'size');
+			const hex = c?.dataset.hex ?? '';
+			t.querySelector<HTMLElement>('[data-garment]')?.style.setProperty('--tint', hex);
+			const nm = t.querySelector<HTMLElement>('[data-colour-name]');
+			if (nm && c) nm.textContent = c.value;
+			if (sum) sum.textContent = `${t.dataset.name} · ${c?.value} · ${s?.value} · £${t.dataset.price}`;
+		};
+		const order = (t: HTMLElement) => {
+			t.querySelector<HTMLElement>('[data-msg]')!.textContent = MSG;
+			if (barMsg) barMsg.textContent = MSG;
+		};
+		tiles.forEach((t) => {
+			t.addEventListener('change', () => {
+				current = t;
+				refresh(t);
+			});
+			t.addEventListener('focusin', () => {
+				current = t;
+				refresh(t);
+			});
+			t.querySelector('[data-order]')?.addEventListener('click', () => order(t));
+			refresh(t);
+		});
+		if (bar) {
+			bar.hidden = false;
+			refresh(current);
+			bar.querySelector('[data-bar-order]')?.addEventListener('click', () => order(current));
+		}
+		// Countdown (enhancement only; the static "closes in" text is always shown)
+		const cd = document.querySelector<HTMLElement>('[data-countdown]');
+		if (cd) {
+			const end = new Date(cd.dataset.countdown!).getTime();
+			const tick = () => {
+				const ms = end - Date.now();
+				if (ms <= 0) return void (cd.hidden = true);
+				const d = Math.floor(ms / 864e5);
+				const h = Math.floor((ms % 864e5) / 36e5);
+				const m = Math.floor((ms % 36e5) / 6e4);
+				cd.textContent = `${d}d ${String(h).padStart(2, '0')}h ${String(m).padStart(2, '0')}m left`;
+				cd.hidden = false;
+			};
+			tick();
+			setInterval(tick, 30000);
+		}
+	}
+</script>

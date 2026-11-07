@@ -1,0 +1,52 @@
+---
+// PROTOTYPE — throwaway. Future Storyblok block: intro_video. Click-to-load facade (no autoplay, preload none).
+import { Image } from 'astro:assets';
+import { assets } from '../assets';
+interface Props {
+	intro: { heading: string; body: string[]; videoLabel: string; videoDurationLabel: string };
+	headingLevel?: 1 | 2;
+}
+const { intro } = Astro.props;
+---
+
+<section class="sec wrap" aria-labelledby="intro-h">
+	<div class="intro">
+		<div>
+			<div class="sec__head"><span class="sec__num" aria-hidden="true"></span></div>
+			<h2 id="intro-h">{intro.heading}</h2>
+			{intro.body.map((p) => <p>{p}</p>)}
+		</div>
+		<figure class="video" data-video>
+			<div class="video__frame">
+				<button type="button" class="video__play" data-play aria-label={intro.videoLabel}>
+					<Image src={assets.videoPoster} alt="" width={360} height={640} widths={[360, 540]} sizes="17rem" />
+					<span class="video__icon" aria-hidden="true"></span>
+				</button>
+			</div>
+			<figcaption class="caps">{intro.videoLabel} · {intro.videoDurationLabel}</figcaption>
+			<script type="application/json" data-src set:html={JSON.stringify({ src: assets.videoUrl })} />
+		</figure>
+	</div>
+</section>
+
+<script>
+	document.querySelectorAll<HTMLElement>('[data-video]').forEach((fig) => {
+		const btn = fig.querySelector<HTMLButtonElement>('[data-play]');
+		const frame = fig.querySelector<HTMLElement>('.video__frame');
+		const poster = fig.querySelector<HTMLImageElement>('img');
+		const cfg = JSON.parse(fig.querySelector('[data-src]')?.textContent || '{}');
+		btn?.addEventListener('click', () => {
+			if (!frame || !cfg.src) return;
+			const v = document.createElement('video');
+			v.controls = true;
+			v.preload = 'none';
+			v.playsInline = true;
+			v.src = cfg.src;
+			if (poster?.currentSrc) v.poster = poster.currentSrc;
+			v.setAttribute('aria-label', btn.getAttribute('aria-label') || 'Welcome video');
+			frame.replaceChildren(v);
+			v.focus();
+			v.play().catch(() => {});
+		});
+	});
+</script>

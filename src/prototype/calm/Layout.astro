@@ -1,0 +1,44 @@
+---
+// PROTOTYPE — throwaway.
+// DESIGN THESIS (calm): a quiet editorial studio site. One centred column, serif headlines, hairline
+// rules instead of cards, small cropped images, brand green used only for links and the single primary
+// button. Navigation is a text "Menu" disclosure on every screen size; the WhatsApp link stays visible.
+import Header from './Header.astro';
+import Footer from './Footer.astro';
+import Switcher from '../Switcher.astro';
+import { site } from '../data';
+import './calm.css';
+
+interface Props {
+	title?: string;
+	description?: string;
+}
+const { title, description = site.tagline } = Astro.props;
+const fullTitle = title ? `${title} — ${site.name}` : `${site.name} — ${site.tagline}`;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="robots" content="noindex" />
+		<meta name="description" content={description} />
+		<title>{fullTitle}</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap"
+			rel="stylesheet"
+		/>
+	</head>
+	<body>
+		<a class="skip" href="#main">Skip to content</a>
+		<Header />
+		<main id="main" tabindex="-1">
+			<slot />
+		</main>
+		<Footer />
+		<Switcher />
+	</body>
+</html>

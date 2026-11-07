@@ -1,0 +1,39 @@
+---
+// PROTOTYPE
+// Design thesis (warm-1): "Warm & Social, photo-led" — full-bleed photography does the talking, stacked
+// rounded bands on cream, forest green brand colour with a sparing terracotta accent, pill buttons, and a
+// repeating green WhatsApp CTA band. Sticky header + slide-in dialog menu on mobile.
+import '../warm-1/styles.css';
+import Switcher from '../Switcher.astro';
+import Header from './Header.astro';
+import Footer from './Footer.astro';
+import CtaBand from './CtaBand.astro';
+import { site } from '../data';
+interface Props { title: string; description?: string; cta?: boolean }
+const { title, description = site.tagline, cta = true } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" class="no-js">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="robots" content="noindex" />
+		<meta name="description" content={description} />
+		<title>{title} | {site.name}</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+		<script is:inline>document.documentElement.className = 'js';</script>
+	</head>
+	<body>
+		<a class="skip" href="#main">Skip to content</a>
+		<Header />
+		<main id="main" tabindex="-1">
+			<slot />
+		</main>
+		{cta && <CtaBand />}
+		<Footer />
+		<Switcher />
+	</body>
+</html>

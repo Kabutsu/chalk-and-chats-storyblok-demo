@@ -1,0 +1,41 @@
+---
+// PROTOTYPE — Storyblok block: event_strip (next few events as timetable rows).
+import type { ClubEvent } from '../data';
+import { dayNum, weekdayShort, monthShort, timeRange } from './dates';
+interface Props { heading: string; events: ClubEvent[]; allHref: string; allLabel: string }
+const { heading, events, allHref, allLabel } = Astro.props;
+---
+
+<section class="strip" aria-labelledby="strip-h">
+	<div class="wrap">
+		<div class="sec-head">
+			<div>
+				<p class="tag">02 / Timetable</p>
+				<h2 id="strip-h" class="h-display">{heading}</h2>
+			</div>
+			<a class="btn btn--ink" href={allHref}>{allLabel}</a>
+		</div>
+		<ul class="tt tt--strip">
+			{
+				events.map((e) => (
+					<li class="tt-row">
+						<a class="tt-sum" href={`${allHref}#${e.id}`}>
+							<span class="tt-date">
+								<b>{dayNum(e.start)}</b>
+								<i>{weekdayShort(e.start)}</i>
+								<em>{monthShort(e.start)}</em>
+							</span>
+							<span class="tt-main">
+								<span class="tt-title">{e.title}</span>
+								<span class="badge" data-type={e.type}>{e.type}</span>
+							</span>
+							<span class="tt-time">{timeRange(e)}</span>
+							<span class="tt-where">{e.place.name}</span>
+							<span class="tt-go" aria-hidden="true">→</span>
+						</a>
+					</li>
+				))
+			}
+		</ul>
+	</div>
+</section>

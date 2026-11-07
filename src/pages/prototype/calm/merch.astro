@@ -1,0 +1,18 @@
+---
+// PROTOTYPE — throwaway. Calm variant: Merch (?drop=open|closed|none).
+import Layout from '../../../prototype/calm/Layout.astro';
+import MerchGrid from '../../../prototype/calm/MerchGrid.astro';
+import { merch, site, parseDropState } from '../../../prototype/data';
+
+const state = parseDropState(Astro.url.searchParams.get('drop'));
+---
+
+<Layout title="Merch" description="Occasional merch Drops from Chalk & Chats.">
+	<div class="wrap">
+		<header class="page-head">
+			<p class="caps">Chalk &amp; Chats</p>
+			<h1>Merch</h1>
+		</header>
+	</div>
+	<MerchGrid merch={merch} state={state} whatsappUrl={site.whatsappUrl} />
+</Layout>

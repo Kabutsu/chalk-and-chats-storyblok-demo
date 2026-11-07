@@ -1,0 +1,20 @@
+---
+// PROTOTYPE — Storyblok block: story (photo-led community story, split layout).
+import { Image } from 'astro:assets';
+interface Props { heading: string; body: string[]; image: ImageMetadata; imageAlt: string; contactEmail: string; instagramUrl: string; instagramHandle: string }
+const { heading, body, image, imageAlt, contactEmail, instagramUrl, instagramHandle } = Astro.props;
+---
+
+<section class="story" aria-labelledby="story-h">
+	<div class="story__photo">
+		<Image src={image} alt={imageAlt} widths={[480, 800, 1100]} sizes="(min-width: 60rem) 50vw, 100vw" loading="eager" />
+	</div>
+	<div class="story__copy">
+		<p class="tag">Our story</p>
+		<h2 id="story-h" class="h-display">{heading}</h2>
+		{body.map((p) => <p>{p}</p>)}
+		<p class="story__contact">
+			<a href={`mailto:${contactEmail}`}>{contactEmail}</a> · <a href={instagramUrl} rel="noopener">Instagram {instagramHandle}</a>
+		</p>
+	</div>
+</section>

@@ -1,0 +1,113 @@
+---
+// PROTOTYPE — Storyblok block: merch_grid. Renders the three Drop states.
+import { merch, site, type DropState } from '../data';
+import Garment from './Garment.astro';
+import { inkFor } from './format';
+interface Props { state: DropState }
+const { state } = Astro.props;
+const { drop, items, colours, sizes } = merch;
+---
+
+<section class="band" aria-label="Merch">
+	<div class="wrap">
+		{state === 'none' && (
+			<div class="notice" id="drop-none">
+				<h2>No Drop planned right now</h2>
+				<p>We only make merch in occasional Drops, and there isn't one on the calendar at the moment.</p>
+				<p>Want to know when the next one lands? It will be announced first in the WhatsApp group.</p>
+				<a class="btn btn--accent" href={site.whatsappUrl} rel="noopener">Join the WhatsApp group</a>
+			</div>
+		)}
+
+		{state === 'closed' && (
+			<div class="notice">
+				<p class="pill pill--green">Sold out for this round</p>
+				<h2>{drop.name} is closed</h2>
+				<p>Thanks for ordering! All orders for this round are in and are being made and fulfilled now.</p>
+				<p>{drop.collection}</p>
+				<p>Follow the WhatsApp group to hear when the next Drop opens.</p>
+				<a class="btn btn--accent" href={site.whatsappUrl} rel="noopener">Join the WhatsApp group</a>
+			</div>
+		)}
+
+		{state === 'open' && (
+			<>
+				<div class="drop-head">
+					<p class="eyebrow">Merch Drop</p>
+					<h2>{drop.name}</h2>
+					<div class="drop-meta">
+						<span class="pill"><time id="countdown" datetime={drop.closesIso} data-closes={drop.closesIso}>{drop.closesLabel}</time></span>
+					</div>
+					<p class="lede">{drop.note}</p>
+					<p class="lede"><strong>Collection:</strong> {drop.collection}</p>
+					<p class="lede">Prices include everything. There's no shipping, you collect at a Session.</p>
+				</div>
+				<ul class="p-grid">
+					{items.map((it) => (
+						<li>
+							<form class="p-card" data-product={it.id}>
+								<div class="stage"><Garment kind={it.garment} colour={colours[0].hex} ink={inkFor(colours[0].hex)} /></div>
+								<div class="p-body">
+									<h3>{it.name}</h3>
+									<p class="price">£{it.price}</p>
+									<p>{it.blurb}</p>
+									<fieldset class="pick">
+										<legend>Colour</legend>
+										<div class="opts">
+											{colours.map((c, i) => (
+												<label>
+													<input type="radio" name={`colour-${it.id}`} value={c.name} data-hex={c.hex} data-ink={inkFor(c.hex)} checked={i === 0} />
+													<span class="swatch" style={`--c:${c.hex}`} aria-hidden="true" />
+													{c.name}
+												</label>
+											))}
+										</div>
+									</fieldset>
+									<fieldset class="pick">
+										<legend>Size</legend>
+										<div class="opts">
+											{sizes.map((s, i) => (
+												<label><input type="radio" name={`size-${it.id}`} value={s} checked={i === 1} />{s}</label>
+											))}
+										</div>
+									</fieldset>
+									<button class="btn btn--accent" type="submit" style="width:100%">Order {it.name}</button>
+									<p class="order-msg" role="status" aria-live="polite"></p>
+								</div>
+							</form>
+						</li>
+					))}
+				</ul>
+			</>
+		)}
+	</div>
+</section>
+
+<script>
+	document.querySelectorAll<HTMLFormElement>('form.p-card').forEach((form) => {
+		const svg = form.querySelector<SVGElement>('svg.garment');
+		form.addEventListener('change', (e) => {
+			const t = e.target as HTMLInputElement;
+			if (t.dataset.hex && svg) svg.setAttribute('style', `--garment:${t.dataset.hex};--ink:${t.dataset.ink}`);
+		});
+		form.addEventListener('submit', (e) => {
+			e.preventDefault();
+			const c = form.querySelector<HTMLInputElement>('input[name^=colour]:checked')?.value;
+			const s = form.querySelector<HTMLInputElement>('input[name^=size]:checked')?.value;
+			const msg = form.querySelector('.order-msg');
+			if (msg) msg.textContent = `Checkout isn't connected in this prototype. (You chose ${c}, size ${s}.)`;
+		});
+	});
+	const cd = document.getElementById('countdown');
+	if (cd?.dataset.closes) {
+		const end = new Date(cd.dataset.closes).getTime();
+		const tick = () => {
+			const ms = end - Date.now();
+			if (ms <= 0) { cd.textContent = 'Orders closed'; return; }
+			const d = Math.floor(ms / 864e5), h = Math.floor((ms % 864e5) / 36e5);
+			cd.textContent = `Orders close in ${d} day${d === 1 ? '' : 's'} ${h} hr`;
+		};
+		tick();
+		setInterval(tick, 60000);
+	}
+</script>

@@ -1,0 +1,18 @@
+---
+// PROTOTYPE — throwaway. Calm variant: Events.
+import Layout from '../../../prototype/calm/Layout.astro';
+import EventList from '../../../prototype/calm/EventList.astro';
+import { getEvents } from '../../../prototype/data';
+
+const events = getEvents();
+---
+
+<Layout title="Events" description="Sessions, socials and trips from Chalk & Chats.">
+	<div class="wrap">
+		<header class="page-head">
+			<p class="caps">Chalk &amp; Chats</p>
+			<h1>Events</h1>
+		</header>
+		<EventList events={events} />
+	</div>
+</Layout>

@@ -1,0 +1,210 @@
+---
+// PROTOTYPE — Storyblok block: event_list. Timetable list (default, works without JS) + month grid + type filter.
+import { Image } from 'astro:assets';
+import { icsHref, type ClubEvent, type EventType } from '../data';
+import { assets } from '../assets';
+import { dayNum, weekdayShort, weekdayLong, monthShort, monthKey, monthLabel, longDate, timeRange, startTime, weeksOf, todayKey, parts } from './dates';
+
+interface Props { events: ClubEvent[]; types: EventType[] }
+const { events, types } = Astro.props;
+
+const months = [...new Set(events.map((e) => monthKey(e.start)))];
+const byMonth = Object.fromEntries(months.map((m) => [m, events.filter((e) => monthKey(e.start) === m)]));
+const byDay = new Map<string, ClubEvent[]>();
+for (const e of events) {
+	const k = e.start.slice(0, 10);
+	byDay.set(k, [...(byDay.get(k) ?? []), e]);
+}
+const today = todayKey();
+const short: Record<EventType, string> = { Session: 'Ses', Social: 'Soc', Competition: 'Comp', Trip: 'Trip' };
+const weekHead = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+---
+
+<div class="events" data-events>
+	<div class="ev-controls" data-js-only>
+		<div class="ev-group" role="group" aria-label="Filter by type">
+			<button type="button" class="chipbtn" data-filter="all" aria-pressed="true">All</button>
+			{types.map((t) => <button type="button" class="chipbtn" data-filter={t} data-type={t} aria-pressed="false"><span class="dot" aria-hidden="true"></span>{t}</button>)}
+		</div>
+		<div class="ev-group ev-group--view" role="group" aria-label="View">
+			<button type="button" class="chipbtn" data-view="list" aria-pressed="true">List</button>
+			<button type="button" class="chipbtn" data-view="month" aria-pressed="false">Month</button>
+		</div>
+	</div>
+	<p class="sr" role="status" data-count></p>
+
+	<div data-panel="list">
+		{
+			months.map((m) => (
+				<section class="tt-month" data-month-group aria-labelledby={`h-${m}`}>
+					<h2 id={`h-${m}`} class="tt-month__h">{monthLabel(m)}</h2>
+					<ul class="tt">
+						{byMonth[m].map((e) => (
+							<li class="tt-row" id={e.id} data-type={e.type}>
+								<details>
+									<summary class="tt-sum">
+										<span class="tt-date">
+											<b>{dayNum(e.start)}</b>
+											<i>{weekdayShort(e.start)}</i>
+											<em>{monthShort(e.start)}</em>
+										</span>
+										<span class="tt-main">
+											<span class="tt-title">{e.title}</span>
+											<span class="badge" data-type={e.type}>{e.type}</span>
+										</span>
+										<span class="tt-time">{timeRange(e)}</span>
+										<span class="tt-where">{e.place.name}</span>
+										<span class="tt-go" aria-hidden="true" />
+									</summary>
+									<div class="tt-detail">
+										{e.image && (
+											<Image src={assets[e.image]} alt="" widths={[320, 560]} sizes="(min-width: 48rem) 280px, 90vw" class="tt-detail__img" loading="lazy" />
+										)}
+										<div class="tt-detail__body">
+											<p>{e.description}</p>
+											<dl class="facts">
+												<div><dt>When</dt><dd>{longDate(e.start)}, {timeRange(e)}{e.recurrence ? ` · ${e.recurrence}` : ''}</dd></div>
+												<div><dt>Where</dt><dd>{e.place.name}, {e.place.area} · <a href={e.place.mapUrl} target="_blank" rel="noopener">Map<span class="sr"> for {e.place.name} (opens in a new tab)</span></a></dd></div>
+												<div><dt>Cost</dt><dd>{e.cost}</dd></div>
+											</dl>
+											<div class="tt-actions">
+												{e.bookingUrl && (
+													<a class="btn btn--lime" href={e.bookingUrl} target="_blank" rel="noopener">Book your spot<span class="sr"> for {e.title} (opens in a new tab)</span></a>
+												)}
+												<a class="btn btn--ink" href={icsHref(e)} download={`${e.id}.ics`}>Add to calendar<span class="sr"> — {e.title}, {longDate(e.start)}</span></a>
+											</div>
+										</div>
+									</div>
+								</details>
+							</li>
+						))}
+					</ul>
+				</section>
+			))
+		}
+	</div>
+
+	<div data-panel="month" hidden>
+		<div class="mpager">
+			<button type="button" class="chipbtn" data-prev>
+				<span aria-hidden="true">←</span><span class="sr">Previous month</span>
+			</button>
+			<p class="mpager__label" data-month-label aria-live="polite">{monthLabel(months[0])}</p>
+			<button type="button" class="chipbtn" data-next>
+				<span aria-hidden="true">→</span><span class="sr">Next month</span>
+			</button>
+		</div>
+		{
+			months.map((m, idx) => (
+				<table class="cal" data-month-table hidden={idx > 0}>
+					<caption>{monthLabel(m)}</caption>
+					<thead>
+						<tr>{weekHead.map((d) => <th scope="col" abbr={d}>{d.slice(0, 3)}</th>)}</tr>
+					</thead>
+					<tbody>
+						{weeksOf(m).map((w) => (
+							<tr>
+								{w.map((day) =>
+									day ? (
+										<td class:list={['cal__day', { 'is-today': day === today }]} aria-current={day === today ? 'date' : undefined}>
+											<span class="cal__n">{parts(day + 'T00:00').d}</span>
+											<span class="cal__list">
+												{(byDay.get(day) ?? []).map((e) => (
+													<button type="button" class="cal__ev" data-type={e.type} data-goto={e.id} aria-label={`${e.title}, ${e.type}, ${weekdayLong(e.start)} ${parts(e.start).d} ${monthLabel(m)} at ${startTime(e.start)}. Show details`}>
+														<span class="cal__short" aria-hidden="true">{short[e.type]}</span>
+														<span class="cal__long" aria-hidden="true"><b>{startTime(e.start)}</b> {e.title}</span>
+													</button>
+												))}
+											</span>
+										</td>
+									) : (
+										<td class="cal__blank"></td>
+									),
+								)}
+							</tr>
+						))}
+					</tbody>
+				</table>
+			))
+		}
+		<p class="cal__key">Select an event to open its details in the list.</p>
+	</div>
+	<p class="ev-empty" data-empty hidden>No events of this type are scheduled right now.</p>
+</div>
+
+<script>
+	document.querySelectorAll<HTMLElement>('[data-events]').forEach((root) => {
+		const q = <T extends HTMLElement>(s: string) => [...root.querySelectorAll<T>(s)];
+		const panels = Object.fromEntries(q('[data-panel]').map((p) => [p.dataset.panel!, p]));
+		const rows = q('li.tt-row');
+		const evBtns = q('.cal__ev');
+		const groups = q('[data-month-group]');
+		const tables = q('[data-month-table]');
+		const countEl = root.querySelector<HTMLElement>('[data-count]')!;
+		const emptyEl = root.querySelector<HTMLElement>('[data-empty]')!;
+		const label = root.querySelector<HTMLElement>('[data-month-label]')!;
+		const prev = root.querySelector<HTMLButtonElement>('[data-prev]')!;
+		const next = root.querySelector<HTMLButtonElement>('[data-next]')!;
+		let filter = 'all';
+		let view = 'list';
+		let mi = 0;
+
+		const press = (sel: string, val: string, attr: string) =>
+			q<HTMLButtonElement>(sel).forEach((b) => b.setAttribute('aria-pressed', String(b.getAttribute(attr) === val)));
+
+		const applyFilter = () => {
+			let shown = 0;
+			rows.forEach((r) => {
+				const ok = filter === 'all' || r.dataset.type === filter;
+				r.hidden = !ok;
+				if (ok) shown++;
+			});
+			evBtns.forEach((b) => (b.hidden = !(filter === 'all' || b.dataset.type === filter)));
+			groups.forEach((g) => (g.hidden = ![...g.querySelectorAll<HTMLElement>('li.tt-row')].some((r) => !r.hidden)));
+			emptyEl.hidden = shown > 0;
+			countEl.textContent = `${shown} ${shown === 1 ? 'event' : 'events'} shown${filter === 'all' ? '' : `, type ${filter}`}`;
+			press('[data-filter]', filter, 'data-filter');
+		};
+		const setView = (v: string) => {
+			view = v;
+			Object.entries(panels).forEach(([k, p]) => (p.hidden = k !== v));
+			press('[data-view]', v, 'data-view');
+		};
+		const showMonth = (i: number) => {
+			mi = Math.max(0, Math.min(tables.length - 1, i));
+			tables.forEach((t, n) => (t.hidden = n !== mi));
+			label.textContent = tables[mi].querySelector('caption')?.textContent ?? '';
+			prev.disabled = mi === 0;
+			next.disabled = mi === tables.length - 1;
+		};
+		const open = (id: string) => {
+			const row = root.querySelector<HTMLElement>(`#${CSS.escape(id)}`);
+			if (!row) return;
+			if (row.hidden) {
+				filter = 'all';
+				applyFilter();
+			}
+			setView('list');
+			const d = row.querySelector('details');
+			if (d) d.open = true;
+			row.scrollIntoView({ block: 'center' });
+			row.querySelector<HTMLElement>('summary')?.focus();
+		};
+
+		q('[data-filter]').forEach((b) =>
+			b.addEventListener('click', () => {
+				filter = b.dataset.filter!;
+				applyFilter();
+			}),
+		);
+		q('[data-view]').forEach((b) => b.addEventListener('click', () => setView(b.dataset.view!)));
+		prev.addEventListener('click', () => showMonth(mi - 1));
+		next.addEventListener('click', () => showMonth(mi + 1));
+		evBtns.forEach((b) => b.addEventListener('click', () => open(b.dataset.goto!)));
+
+		showMonth(0);
+		applyFilter();
+		countEl.textContent = '';
+		if (location.hash.length > 1) open(decodeURIComponent(location.hash.slice(1)));
+	});
+</script>

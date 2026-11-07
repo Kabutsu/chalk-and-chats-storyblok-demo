@@ -1,0 +1,33 @@
+---
+// PROTOTYPE — throwaway. Body of one event (shared by list <details> and the grid dialog).
+import { Image } from 'astro:assets';
+import { icsHref, type ClubEvent } from '../data';
+import { assets } from '../assets';
+import { fmtDayLong, fmtTimes } from './format';
+interface Props {
+	event: ClubEvent;
+}
+const { event: e } = Astro.props;
+---
+
+<div class="ev__body">
+	{e.image && <Image src={assets[e.image]} alt="" width={352} widths={[352, 704]} sizes="22rem" />}
+	<p>{e.description}</p>
+	<dl class="ev__meta">
+		<dt>When</dt>
+		<dd>
+			{fmtDayLong(e.start)}, {fmtTimes(e)}
+			{e.recurrence && <span> ({e.recurrence})</span>}
+		</dd>
+		<dt>Where</dt>
+		<dd>
+			{e.place.name}, {e.place.area} · <a href={e.place.mapUrl}>Map<span class="sr-only"> to {e.place.name}</span></a>
+		</dd>
+		<dt>Cost</dt>
+		<dd>{e.cost}</dd>
+	</dl>
+	<div class="ev__actions">
+		{e.bookingUrl && <a class="btn" href={e.bookingUrl}>Book<span class="sr-only"> {e.title}</span></a>}
+		<a class="link" href={icsHref(e)} download={`${e.id}.ics`}>Add to calendar<span class="sr-only">: {e.title}</span></a>
+	</div>
+</div>

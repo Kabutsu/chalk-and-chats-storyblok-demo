@@ -1,0 +1,31 @@
+---
+// PROTOTYPE — throwaway. Inline SVG garment silhouette tinted via --garment. Decorative (name is in adjacent text).
+interface Props {
+	kind: 'tee' | 'hoodie' | 'tank';
+	colour?: string;
+}
+const { kind, colour } = Astro.props;
+const style = colour ? `--garment:${colour}` : undefined;
+---
+
+<svg class="garment" viewBox="0 0 100 100" aria-hidden="true" focusable="false" style={style}>
+	{
+		kind === 'tee' && (
+			<path d="M32 10 L8 24 L17 41 L28 36 L28 90 L72 90 L72 36 L83 41 L92 24 L68 10 Q50 24 32 10 Z" />
+		)
+	}
+	{
+		kind === 'hoodie' && (
+			<>
+				<path d="M30 14 L6 30 L10 84 L24 84 L26 44 L26 90 L74 90 L74 44 L76 84 L90 84 L94 30 L70 14 Q50 30 30 14 Z" />
+				<path d="M36 12 Q50 2 64 12 Q50 34 36 12 Z" />
+				<path d="M38 68 L62 68 L60 82 L40 82 Z" />
+			</>
+		)
+	}
+	{
+		kind === 'tank' && (
+			<path d="M33 8 L41 8 Q50 30 59 8 L67 8 L70 30 Q66 40 72 48 L72 90 L28 90 L28 48 Q34 40 30 30 Z" />
+		)
+	}
+</svg>

@@ -16,3 +16,6 @@ npm-debug.log*
 
 # macOS-specific files
 .DS_Store
+
+# source video (large; compressed copy is src/images/welcome-video.mp4)
+src/images/Online_Chalk&Chats Intro.mp4

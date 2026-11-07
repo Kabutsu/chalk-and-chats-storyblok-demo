@@ -1,0 +1,11 @@
+---
+// PROTOTYPE — decorative-only ticker. aria-hidden; static (no animation) under prefers-reduced-motion.
+interface Props { items: string[] }
+const { items } = Astro.props;
+---
+
+<div class="ticker" aria-hidden="true">
+	<div class="ticker__track">
+		{[0, 1].map(() => <ul>{items.map((t) => <li>{t}</li>)}</ul>)}
+	</div>
+</div>

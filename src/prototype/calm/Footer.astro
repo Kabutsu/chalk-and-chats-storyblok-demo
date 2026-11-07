@@ -1,0 +1,30 @@
+---
+// PROTOTYPE — throwaway.
+import { site, hero } from '../data';
+const base = '/prototype/calm';
+---
+
+<footer class="site-footer">
+	<div class="wrap site-footer__grid">
+		<div>
+			<p class="wordmark">{site.name}</p>
+			<p>{site.tagline}</p>
+			<a class="btn" href={site.whatsappUrl}>{hero.primaryCta.label}</a>
+		</div>
+		<nav aria-label="Footer">
+			<ul>
+				{
+					site.nav.map((n) => (
+						<li>
+							<a href={n.slug ? `${base}/${n.slug}` : base}>{n.label}</a>
+						</li>
+					))
+				}
+			</ul>
+		</nav>
+		<ul>
+			<li><a href={site.instagramUrl}>Instagram {site.instagramHandle}</a></li>
+			<li><a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a></li>
+		</ul>
+	</div>
+</footer>

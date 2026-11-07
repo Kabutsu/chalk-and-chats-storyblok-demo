@@ -1,0 +1,22 @@
+---
+// PROTOTYPE — throwaway. Calm variant: About / Your First Session.
+import Layout from '../../../prototype/calm/Layout.astro';
+import AboutEssay from '../../../prototype/calm/AboutEssay.astro';
+import Faq from '../../../prototype/calm/Faq.astro';
+import { faq, site } from '../../../prototype/data';
+---
+
+<Layout title="About" description="The story of Chalk & Chats and what to expect at your first Session.">
+	<AboutEssay />
+	<div class="wrap">
+		<section class="sec" style="padding-inline:0" aria-labelledby="faq-h">
+			<h2 id="faq-h">Questions</h2>
+			<Faq faq={faq} />
+		</section>
+		<section class="sec" style="padding-inline:0" aria-labelledby="contact-h">
+			<h2 id="contact-h">Contact</h2>
+			<p><a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a></p>
+			<p><a href={site.instagramUrl}>Instagram {site.instagramHandle}</a></p>
+		</section>
+	</div>
+</Layout>

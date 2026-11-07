@@ -1,0 +1,146 @@
+---
+// PROTOTYPE — Storyblok block: event_list (filter chips + list/month toggle). List works without JS.
+import { eventTypes, getEvents } from '../data';
+import EventCard from './EventCard.astro';
+import { fmtMonth, fmtTime, typeClass } from './format';
+const events = getEvents();
+const todayKey = (() => { const n = new Date(); return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}-${String(n.getDate()).padStart(2, '0')}`; })();
+const monthKeys = [...new Set(events.map((e) => e.start.slice(0, 7)))];
+const dows = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const longDows = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+function weeks(key: string) {
+	const [y, m] = key.split('-').map(Number);
+	const first = new Date(Date.UTC(y, m - 1, 1));
+	const lead = (first.getUTCDay() + 6) % 7;
+	const days = new Date(Date.UTC(y, m, 0)).getUTCDate();
+	const cells: (number | null)[] = [...Array(lead).fill(null), ...Array.from({ length: days }, (_, i) => i + 1)];
+	while (cells.length % 7) cells.push(null);
+	const rows: (number | null)[][] = [];
+	for (let i = 0; i < cells.length; i += 7) rows.push(cells.slice(i, i + 7));
+	return rows;
+}
+---
+
+<section class="band" aria-label="Events">
+	<div class="wrap" id="events-app">
+		<div class="controls">
+			<fieldset class="chips js-only" aria-describedby="filter-status">
+				<legend>Filter by type</legend>
+				<button class="chip" type="button" data-filter="all" aria-pressed="true">All</button>
+				{eventTypes.map((t) => <button class="chip" type="button" data-filter={t} aria-pressed="false">{t}</button>)}
+			</fieldset>
+			<div class="seg js-only" role="group" aria-label="View">
+				<button type="button" data-view="list" aria-pressed="true">List</button>
+				<button type="button" data-view="month" aria-pressed="false">Month</button>
+			</div>
+		</div>
+		<p class="status" id="filter-status" role="status" aria-live="polite">Showing {events.length} events</p>
+
+		<div id="view-list">
+			<ul class="ev-grid ev-grid--list" id="ev-list">
+				{events.map((e) => <li data-type={e.type}><EventCard event={e} /></li>)}
+			</ul>
+			<p class="empty-msg" id="ev-empty" hidden>No events of that type coming up. Try another filter.</p>
+		</div>
+
+		<div id="view-month" hidden>
+			<div class="cal-nav">
+				<button class="btn btn--ghost btn--sm" type="button" id="cal-prev">Previous month</button>
+				<button class="btn btn--ghost btn--sm" type="button" id="cal-next">Next month</button>
+			</div>
+			{monthKeys.map((key, mi) => (
+				<table class="cal" data-month={key} hidden={mi !== 0}>
+					<caption>{fmtMonth(key)}</caption>
+					<thead><tr>{dows.map((d, i) => <th scope="col" abbr={longDows[i]}>{d}</th>)}</tr></thead>
+					<tbody>
+						{weeks(key).map((row) => (
+							<tr>
+								{row.map((day, ci) => {
+									if (!day) return <td class="empty"></td>;
+									const iso = `${key}-${String(day).padStart(2, '0')}`;
+									const evs = events.filter((e) => e.start.startsWith(iso));
+									return (
+										<td class:list={[iso === todayKey && 'today', !evs.length && 'noev']}>
+											<div class="daylabel"><span class="dayname">{dows[ci]} </span><span class="daynum">{day}{iso === todayKey && <span class="sr-only"> (today)</span>}</span></div>
+											{evs.map((e) => (
+												<button class={`cal-ev badge ${typeClass(e.type)}`} type="button" data-ev={e.id} data-type={e.type}>
+													<span class="t">{fmtTime(e.start)} {e.title}</span>
+													<span class="ty">{e.type}</span>
+													<span class="sr-only">{e.type}. Show details</span>
+												</button>
+											))}
+										</td>
+									);
+								})}
+							</tr>
+						))}
+					</tbody>
+				</table>
+			))}
+		</div>
+
+		<dialog class="ev-dialog" id="ev-dialog" aria-label="Event details">
+			<button class="btn btn--cream btn--sm dlg-close" type="button" id="dlg-close">Close<span class="sr-only"> event details</span></button>
+			<div id="dlg-body"></div>
+		</dialog>
+	</div>
+</section>
+
+<script>
+	const app = document.getElementById('events-app');
+	if (app) {
+		let filter = 'all';
+		let mi = 0;
+		const $ = <T extends HTMLElement>(s: string) => app.querySelector<T>(s)!;
+		const status = $('#filter-status');
+		const tables = [...app.querySelectorAll<HTMLTableElement>('table.cal')];
+		const apply = () => {
+			let n = 0;
+			app.querySelectorAll<HTMLElement>('#ev-list > li').forEach((li) => {
+				const show = filter === 'all' || li.dataset.type === filter;
+				li.hidden = !show;
+				if (show) n++;
+			});
+			app.querySelectorAll<HTMLElement>('.cal-ev').forEach((b) => (b.hidden = !(filter === 'all' || b.dataset.type === filter)));
+			$('#ev-empty').hidden = n > 0;
+			status.textContent = `Showing ${n} ${filter === 'all' ? '' : filter + ' '}event${n === 1 ? '' : 's'}`;
+		};
+		app.querySelectorAll<HTMLButtonElement>('[data-filter]').forEach((b) =>
+			b.addEventListener('click', () => {
+				filter = b.dataset.filter!;
+				app.querySelectorAll<HTMLButtonElement>('[data-filter]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+				apply();
+			}),
+		);
+		const showMonth = () => {
+			tables.forEach((t, i) => (t.hidden = i !== mi));
+			$<HTMLButtonElement>('#cal-prev').disabled = mi === 0;
+			$<HTMLButtonElement>('#cal-next').disabled = mi === tables.length - 1;
+		};
+		app.querySelectorAll<HTMLButtonElement>('[data-view]').forEach((b) =>
+			b.addEventListener('click', () => {
+				const view = b.dataset.view!;
+				app.querySelectorAll<HTMLButtonElement>('[data-view]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+				$('#view-list').hidden = view !== 'list';
+				$('#view-month').hidden = view !== 'month';
+				if (view === 'month') showMonth();
+			}),
+		);
+		$('#cal-prev').addEventListener('click', () => { mi = Math.max(0, mi - 1); showMonth(); });
+		$('#cal-next').addEventListener('click', () => { mi = Math.min(tables.length - 1, mi + 1); showMonth(); });
+		const dlg = $<HTMLDialogElement>('#ev-dialog');
+		app.querySelectorAll<HTMLButtonElement>('.cal-ev').forEach((b) =>
+			b.addEventListener('click', () => {
+				const card = document.getElementById('ev-' + b.dataset.ev);
+				if (!card) return;
+				const clone = card.cloneNode(true) as HTMLElement;
+				clone.removeAttribute('id');
+				$('#dlg-body').replaceChildren(clone);
+				dlg.setAttribute('aria-label', card.querySelector('h3')?.textContent ?? 'Event details');
+				dlg.showModal();
+			}),
+		);
+		$('#dlg-close').addEventListener('click', () => dlg.close());
+		dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+	}
+</script>

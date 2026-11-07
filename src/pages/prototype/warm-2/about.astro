@@ -1,0 +1,36 @@
+---
+// PROTOTYPE — warm-2 about / your first session
+import Layout from '../../../prototype/warm-2/Layout.astro';
+import Polaroid from '../../../prototype/warm-2/Polaroid.astro';
+import FirstSession from '../../../prototype/warm-2/FirstSession.astro';
+import Faq from '../../../prototype/warm-2/Faq.astro';
+import { site, hero, intro, highlights, firstSession, faq } from '../../../prototype/data';
+import { assets } from '../../../prototype/assets';
+---
+<Layout title="About">
+	<div class="page-head">
+		<h1>{intro.heading}</h1>
+	</div>
+	<div class="collage">
+		<Polaroid image={assets.chalkHand} alt={hero.imageAlt} tilt={-2} width={500} />
+		<Polaroid image={assets.holdsPink} alt="Pink and yellow climbing holds on a teal wall" tilt={2} width={500} />
+		<Polaroid image={assets.holdsBlue} alt="Colourful climbing holds on a pale blue wall" tilt={-1} width={500} />
+		<Polaroid image={assets.chalkBags} alt="Chalk bags on a wooden table outdoors" tilt={2.5} width={500} />
+	</div>
+	<section class="story" aria-label="Our story">
+		{intro.body.map((p) => <p>{p}</p>)}
+	</section>
+	<section class="section-gap" aria-label="Highlights">
+		<h2 class="sr">Highlights</h2>
+		<div class="cards3">
+			{highlights.map((h) => <div class="tile"><h3>{h.title}</h3><p>{h.body}</p></div>)}
+		</div>
+	</section>
+	<FirstSession firstSession={firstSession} />
+	<Faq faq={faq} />
+	<section class="tile tile--sky section-gap" aria-labelledby="contact-h">
+		<h2 id="contact-h">Say hello</h2>
+		<p><a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a></p>
+		<p><a href={site.instagramUrl}>Instagram {site.instagramHandle}</a></p>
+	</section>
+</Layout>

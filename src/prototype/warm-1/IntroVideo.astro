@@ -1,0 +1,41 @@
+---
+// PROTOTYPE — Storyblok block: intro_video (click-to-load facade)
+import { Image } from 'astro:assets';
+import { assets } from '../assets';
+import { intro } from '../data';
+const { data = intro } = Astro.props;
+---
+
+<section class="band" aria-labelledby="intro-h">
+	<div class="wrap intro-grid">
+		<div>
+			<h2 id="intro-h">{data.heading}</h2>
+			{data.body.map((p: string) => <p class="lede">{p}</p>)}
+		</div>
+		<div class="video-frame" id="video-frame">
+			<button class="video-facade" type="button" id="video-play" aria-label={`Play video: ${data.videoLabel} (${data.videoDurationLabel})`} data-src={assets.videoUrl} data-poster={assets.videoPoster.src}>
+				<Image src={assets.videoPoster} alt="" width={360} height={640} widths={[360, 720]} sizes="340px" />
+				<span class="play" aria-hidden="true">
+					<svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
+				</span>
+				<span class="cap">{data.videoLabel} · {data.videoDurationLabel}</span>
+			</button>
+		</div>
+	</div>
+</section>
+
+<script>
+	const btn = document.getElementById('video-play') as HTMLButtonElement | null;
+	btn?.addEventListener('click', () => {
+		const v = document.createElement('video');
+		v.controls = true;
+		v.preload = 'none';
+		v.poster = btn.dataset.poster ?? '';
+		v.src = btn.dataset.src ?? '';
+		v.setAttribute('playsinline', '');
+		v.setAttribute('aria-label', 'Chalk & Chats welcome video');
+		btn.replaceWith(v);
+		v.focus();
+		v.play().catch(() => {});
+	});
+</script>

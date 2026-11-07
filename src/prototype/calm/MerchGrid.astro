@@ -1,0 +1,139 @@
+---
+// PROTOTYPE — throwaway. Future Storyblok block: merch_grid. Handles the three Drop states.
+import Garment from './Garment.astro';
+import { merch, site, type DropState } from '../data';
+import { fmtClose } from './format';
+interface Props {
+	merch: typeof merch;
+	state: DropState;
+	whatsappUrl: string;
+}
+const { merch: m, state, whatsappUrl } = Astro.props;
+---
+
+{
+	state === 'none' && (
+		<section class="wrap state" aria-labelledby="drop-h">
+			<h2 id="drop-h">No Drop planned right now</h2>
+			<p>We only sell {site.name} merch in occasional Drops, and nothing is planned at the moment. We announce the next one in the WhatsApp group first.</p>
+			<a class="btn" href={whatsappUrl}>Join the WhatsApp group</a>
+		</section>
+	)
+}
+
+{
+	state !== 'none' && (
+		<section class="wrap drop" aria-labelledby="drop-h">
+			<h2 id="drop-h">{m.drop.name}</h2>
+			{state === 'open' ? (
+				<div class="drop__meta">
+					<p style="margin:0">
+						<strong>Orders close {fmtClose(m.drop.closesIso)}.</strong>{' '}
+						<span data-countdown data-closes={m.drop.closesIso}>{m.drop.closesLabel}</span>
+					</p>
+					<p style="margin:0">{m.drop.collection}</p>
+					<p style="margin:0;color:var(--ink-soft)">{m.drop.note}</p>
+				</div>
+			) : (
+				<div class="drop__meta">
+					<p style="margin:0">
+						<span class="soldout">Sold out for this round.</span> Orders are being fulfilled.
+					</p>
+					<p style="margin:0">{m.drop.collection}</p>
+				</div>
+			)}
+
+			<ul class="products">
+				{m.items.map((item) =>
+					state === 'open' ? (
+						<li>
+							<form class="product" data-product data-name={item.name} style={`--garment:${m.colours[0].hex}`} action="#" method="get">
+								<Garment kind={item.garment} />
+								<div class="product__body">
+									<h3>{item.name}</h3>
+									<p style="margin:0 0 0.5rem">{item.blurb}</p>
+									<p class="product__price">
+										£{item.price} <span class="caps">all-in price</span>
+									</p>
+									<fieldset>
+										<legend class="caps">Colour</legend>
+										<div class="picker">
+											{m.colours.map((c, i) => (
+												<label class="opt opt--box">
+													<input type="radio" name={`${item.id}-colour`} value={c.name} data-hex={c.hex} checked={i === 0} />
+													<span>
+														<span class="swatch" style={`--sw:${c.hex}`} />
+														{c.name}
+													</span>
+												</label>
+											))}
+										</div>
+									</fieldset>
+									<fieldset>
+										<legend class="caps">Size</legend>
+										<div class="picker">
+											{m.sizes.map((s, i) => (
+												<label class="opt opt--box">
+													<input type="radio" name={`${item.id}-size`} value={s} checked={i === 1} />
+													<span>{s}</span>
+												</label>
+											))}
+										</div>
+									</fieldset>
+									<button type="submit" class="btn">
+										Order<span class="sr-only"> {item.name}</span>
+									</button>
+								</div>
+							</form>
+						</li>
+					) : (
+						<li class="product">
+							<Garment kind={item.garment} colour="#d6d2c4" />
+							<div class="product__body">
+								<h3>{item.name}</h3>
+								<p class="product__price">
+									£{item.price} <span class="soldout">Sold out</span>
+								</p>
+							</div>
+						</li>
+					)
+				)}
+			</ul>
+			<p class="status" role="status" aria-live="polite" data-status></p>
+		</section>
+	)
+}
+
+<script>
+	const status = document.querySelector<HTMLElement>('[data-status]');
+	document.querySelectorAll<HTMLFormElement>('[data-product]').forEach((form) => {
+		form.addEventListener('change', (e) => {
+			const t = e.target as HTMLInputElement;
+			if (t.dataset.hex) form.style.setProperty('--garment', t.dataset.hex);
+		});
+		form.addEventListener('submit', (e) => {
+			e.preventDefault();
+			const fd = new FormData(form);
+			const vals = [...fd.values()].join(', ');
+			if (!status) return;
+			status.textContent = '';
+			setTimeout(() => {
+				status.textContent = `Checkout isn't connected in this prototype. You chose ${form.dataset.name}: ${vals}.`;
+			}, 50);
+		});
+	});
+
+	const cd = document.querySelector<HTMLElement>('[data-countdown]');
+	if (cd?.dataset.closes) {
+		const end = new Date(cd.dataset.closes).getTime();
+		const tick = () => {
+			const ms = end - Date.now();
+			if (ms <= 0) return (cd.textContent = 'Orders are closed.');
+			const d = Math.floor(ms / 86400000);
+			const h = Math.floor((ms % 86400000) / 3600000);
+			cd.textContent = `${d} ${d === 1 ? 'day' : 'days'}, ${h} ${h === 1 ? 'hour' : 'hours'} left.`;
+		};
+		tick();
+		setInterval(tick, 60000);
+	}
+</script>

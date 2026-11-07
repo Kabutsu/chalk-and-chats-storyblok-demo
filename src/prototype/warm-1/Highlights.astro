@@ -1,0 +1,9 @@
+---
+// PROTOTYPE — Storyblok block: highlights
+import { highlights } from '../data';
+const { items = highlights } = Astro.props;
+---
+
+<ul class="highlights">
+	{items.map((h: any) => <li><h3>{h.title}</h3><p>{h.body}</p></li>)}
+</ul>

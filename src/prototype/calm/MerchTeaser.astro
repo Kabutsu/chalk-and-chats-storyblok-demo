@@ -1,0 +1,21 @@
+---
+// PROTOTYPE — throwaway. Future Storyblok block: merch_teaser (a single quiet line + small garment).
+import Garment from './Garment.astro';
+import { merch } from '../data';
+interface Props {
+	merchHref: string;
+}
+const { merchHref } = Astro.props;
+const item = merch.items[0];
+---
+
+<section class="sec wrap" aria-labelledby="merch-h">
+	<div class="sec__head"><span class="sec__num" aria-hidden="true"></span></div>
+	<h2 id="merch-h">Merch</h2>
+	<div class="teaser">
+		<Garment kind={item.garment} colour={merch.colours[0].hex} />
+		<p class="teaser__line">
+			{merch.drop.name}: {item.name} from £{item.price}. <a href={merchHref}>See the Drop</a>
+		</p>
+	</div>
+</section>

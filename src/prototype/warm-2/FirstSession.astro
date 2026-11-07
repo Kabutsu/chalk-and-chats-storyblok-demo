@@ -1,0 +1,15 @@
+---
+// PROTOTYPE — Storyblok block: first session guide (full).
+const { firstSession } = Astro.props;
+---
+<section class="section-gap" id="first-session" aria-labelledby="fsg-h">
+	<h2 id="fsg-h">{firstSession.heading}</h2>
+	<p>{firstSession.intro}</p>
+	<ol class="steps">
+		{firstSession.steps.map((s: any) => <li><div><h3>{s.title}</h3><p>{s.body}</p></div></li>)}
+	</ol>
+	<div class="two section-gap">
+		<div class="tile tile--butter"><h3>Cost</h3><p>{firstSession.cost}</p></div>
+		<div class="tile tile--soft"><h3>Kit</h3><p>{firstSession.kit}</p></div>
+	</div>
+</section>

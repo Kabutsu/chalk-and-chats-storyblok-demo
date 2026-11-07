@@ -1,0 +1,32 @@
+---
+// PROTOTYPE
+import { Image } from 'astro:assets';
+import { site } from '../data';
+import { assets } from '../assets';
+const base = '/prototype/crisp';
+const year = new Date().getFullYear();
+---
+
+<footer class="c-footer on-dark">
+	<div class="wrap c-footer__grid">
+		<div class="c-footer__join">
+			<Image src={assets.logo} alt="" width={144} height={144} class="c-footer__logo" loading="lazy" />
+			<p class="c-footer__big">Climb. Chat. Repeat.</p>
+			<a class="btn btn--lime" href={site.whatsappUrl} rel="noopener">Join the WhatsApp group</a>
+		</div>
+		<nav aria-label="Footer">
+			<h2 class="c-footer__h">Pages</h2>
+			<ul>
+				{site.nav.map((n) => <li><a href={n.slug ? `${base}/${n.slug}` : base}>{n.label}</a></li>)}
+			</ul>
+		</nav>
+		<div>
+			<h2 class="c-footer__h">Find us</h2>
+			<ul>
+				<li><a href={site.instagramUrl} rel="noopener">Instagram {site.instagramHandle}</a></li>
+				<li><a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a></li>
+			</ul>
+		</div>
+	</div>
+	<p class="wrap c-footer__legal">© {year} {site.name}. Southampton. Prototype content is placeholder.</p>
+</footer>

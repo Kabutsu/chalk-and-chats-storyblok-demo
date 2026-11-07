@@ -1,0 +1,22 @@
+---
+// PROTOTYPE — Storyblok block: hero
+import { Image } from 'astro:assets';
+import { assets } from '../assets';
+import { hero } from '../data';
+const { data = hero, image = assets.chalkHand } = Astro.props;
+---
+
+<section class="hero scrim on-dark" aria-labelledby="hero-h">
+	<Image src={image} alt={data.imageAlt} widths={[640, 1024, 1600]} sizes="100vw" loading="eager" />
+	<div class="wrap">
+		<p class="eyebrow">{data.eyebrow}</p>
+		<h1 id="hero-h">{data.headline}</h1>
+		<p class="sub">{data.subheadline}</p>
+		<div class="btn-row">
+			<a class="btn btn--cream" href={data.primaryCta.url} rel="noopener">{data.primaryCta.label}</a>
+			<a class="btn btn--ghost-light" href={data.secondaryCta.url} rel="noopener">
+				<span>{data.secondaryCta.label}<span class="btn-note">{data.secondaryCta.note}</span></span>
+			</a>
+		</div>
+	</div>
+</section>

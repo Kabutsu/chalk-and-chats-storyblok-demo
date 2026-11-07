@@ -1,0 +1,56 @@
+---
+// PROTOTYPE — throwaway. Future Storyblok block: about_essay (story + highlights + first session + cost).
+import { Image } from 'astro:assets';
+import { assets } from '../assets';
+import { site, hero, intro, highlights, firstSession, wednesdayBookingUrl } from '../data';
+---
+
+<article class="essay wrap">
+	<header class="page-head" style="padding-inline:0">
+		<p class="caps">{site.name}</p>
+		<h1>{intro.heading}</h1>
+	</header>
+	{intro.body.map((p) => <p>{p}</p>)}
+	<figure>
+		<Image src={assets.chalkBags} alt="Chalk bags lined up on a wooden table outdoors" width={384} widths={[384, 768]} sizes="24rem" />
+		<figcaption class="caps">{site.tagline}</figcaption>
+	</figure>
+	<blockquote class="pull"><p>{hero.subheadline}</p></blockquote>
+
+	<section class="sec" style="padding-inline:0" aria-labelledby="hl-h">
+		<h2 id="hl-h">In short</h2>
+		<ul class="rule-list">
+			{
+				highlights.map((h) => (
+					<li>
+						<h3>{h.title}</h3>
+						<p>{h.body}</p>
+					</li>
+				))
+			}
+		</ul>
+	</section>
+
+	<section class="sec" style="padding-inline:0" aria-labelledby="fs-h">
+		<h2 id="fs-h">{firstSession.heading}</h2>
+		<p>{firstSession.intro}</p>
+		<ol class="rule-list steps">
+			{
+				firstSession.steps.map((s) => (
+					<li>
+						<h3>{s.title}</h3>
+						<p>{s.body}</p>
+					</li>
+				))
+			}
+		</ol>
+		<h3 style="margin-top:2.5rem">Cost</h3>
+		<p>{firstSession.cost}</p>
+		<h3>Kit</h3>
+		<p>{firstSession.kit}</p>
+		<div class="hero__ctas">
+			<a class="btn" href={site.whatsappUrl}>{hero.primaryCta.label}</a>
+			<a class="link" href={wednesdayBookingUrl}>{hero.secondaryCta.label}</a>
+		</div>
+	</section>
+</article>

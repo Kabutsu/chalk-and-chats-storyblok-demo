@@ -1,0 +1,19 @@
+---
+// PROTOTYPE — Storyblok block: stats_strip. Big numerals on a visible grid.
+interface Stat { value: string; label: string }
+interface Props { stats: Stat[] }
+const { stats } = Astro.props;
+---
+
+<section class="stats" aria-label="Chalk and Chats at a glance">
+	<dl class="stats__grid">
+		{
+			stats.map((s) => (
+				<div class="stats__cell">
+					<dt>{s.label}</dt>
+					<dd>{s.value}</dd>
+				</div>
+			))
+		}
+	</dl>
+</section>

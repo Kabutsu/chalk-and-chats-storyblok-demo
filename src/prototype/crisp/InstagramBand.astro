@@ -1,0 +1,15 @@
+---
+// PROTOTYPE — Storyblok block: social_band.
+interface Props { handle: string; url: string; label: string; text: string }
+const { handle, url, label, text } = Astro.props;
+---
+
+<section class="band" aria-labelledby="band-h">
+	<div class="wrap band__inner">
+		<div>
+			<h2 id="band-h" class="band__h">{handle}</h2>
+			<p>{text}</p>
+		</div>
+		<a class="btn btn--ink" href={url} rel="noopener">{label}</a>
+	</div>
+</section>

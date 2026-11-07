@@ -1,0 +1,11 @@
+---
+// PROTOTYPE — Storyblok block: "your first session" teaser tile.
+const { firstSession } = Astro.props;
+---
+<section class="tile t-first tile--coral" aria-labelledby="fs-h">
+	<h2 id="fs-h">{firstSession.heading}</h2>
+	<ol class="steps-mini">
+		{firstSession.steps.slice(0, 3).map((s: any) => <li>{s.title}</li>)}
+	</ol>
+	<a class="btn" href="/prototype/warm-2/about#first-session">What to expect</a>
+</section>

@@ -1,0 +1,20 @@
+---
+// PROTOTYPE — throwaway. Calm variant: Home.
+import Layout from '../../../prototype/calm/Layout.astro';
+import Hero from '../../../prototype/calm/Hero.astro';
+import IntroVideo from '../../../prototype/calm/IntroVideo.astro';
+import UpcomingEvents from '../../../prototype/calm/UpcomingEvents.astro';
+import MerchTeaser from '../../../prototype/calm/MerchTeaser.astro';
+import InstagramLink from '../../../prototype/calm/InstagramLink.astro';
+import { hero, intro, getEvents } from '../../../prototype/data';
+
+const upcoming = getEvents().slice(0, 4);
+---
+
+<Layout>
+	<Hero hero={hero} />
+	<IntroVideo intro={intro} />
+	<UpcomingEvents events={upcoming} eventsHref="/prototype/calm/events" />
+	<MerchTeaser merchHref="/prototype/calm/merch" />
+	<InstagramLink />
+</Layout>

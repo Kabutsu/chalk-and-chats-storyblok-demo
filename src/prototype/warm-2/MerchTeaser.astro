@@ -1,0 +1,14 @@
+---
+// PROTOTYPE — Storyblok block: merch teaser tile.
+import Garment from './Garment.astro';
+const { merch } = Astro.props;
+const tilts = [-6, 0, 6];
+---
+<section class="tile t-merch tile--butter" aria-labelledby="mt-h">
+	<h2 id="mt-h">Merch</h2>
+	<div class="merch-stickers" aria-hidden="true">
+		{merch.items.map((it: any, i: number) => <div class="garment" style={`--tilt:${tilts[i % 3]}deg`}><Garment kind={it.garment} colour={merch.colours[i % merch.colours.length].hex} mark={i === 1 ? '#437032' : '#fbf5e6'} /></div>)}
+	</div>
+	<p><strong>{merch.drop.name}</strong><br />{merch.drop.closesLabel}</p>
+	<a class="btn" href="/prototype/warm-2/merch">See the merch</a>
+</section>

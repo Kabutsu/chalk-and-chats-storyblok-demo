@@ -1,0 +1,24 @@
+---
+// PROTOTYPE
+import Layout from '../../../prototype/warm-1/Layout.astro';
+import Hero from '../../../prototype/warm-1/Hero.astro';
+import IntroVideo from '../../../prototype/warm-1/IntroVideo.astro';
+import Highlights from '../../../prototype/warm-1/Highlights.astro';
+import EventStrip from '../../../prototype/warm-1/EventStrip.astro';
+import MerchTeaser from '../../../prototype/warm-1/MerchTeaser.astro';
+import { site } from '../../../prototype/data';
+---
+
+<Layout title="Home">
+	<Hero />
+	<IntroVideo />
+	<div class="wrap" style="padding-bottom:56px"><Highlights /></div>
+	<EventStrip />
+	<MerchTeaser />
+	<section class="band band--cream2" aria-labelledby="ig-h">
+		<div class="wrap" style="text-align:center">
+			<h2 id="ig-h">Follow along on Instagram</h2>
+			<a class="btn btn--primary" href={site.instagramUrl} rel="noopener">{site.instagramHandle}</a>
+		</div>
+	</section>
+</Layout>

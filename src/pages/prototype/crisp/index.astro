@@ -1,0 +1,41 @@
+---
+// PROTOTYPE — crisp variant: Home
+import Layout from '../../../prototype/crisp/Layout.astro';
+import Hero from '../../../prototype/crisp/Hero.astro';
+import Stats from '../../../prototype/crisp/Stats.astro';
+import Ticker from '../../../prototype/crisp/Ticker.astro';
+import IntroVideo from '../../../prototype/crisp/IntroVideo.astro';
+import EventStrip from '../../../prototype/crisp/EventStrip.astro';
+import MerchTeaser from '../../../prototype/crisp/MerchTeaser.astro';
+import InstagramBand from '../../../prototype/crisp/InstagramBand.astro';
+import { site, hero, intro, highlights, merch, walls, getEvents } from '../../../prototype/data';
+import { assets } from '../../../prototype/assets';
+
+const events = getEvents();
+const next = events.slice(0, 4);
+const stats = [
+	{ value: String(site.memberCount), label: 'Members' },
+	{ value: String(events.length), label: 'Events coming up' },
+	{ value: String(Object.keys(walls).length), label: 'Walls we climb at' },
+	{ value: highlights[0].title.replace(/ welcome$/i, ''), label: 'Every grade' },
+];
+const ticker = [hero.headline, ...highlights.map((h) => h.title), site.tagline];
+---
+
+<Layout>
+	<Hero {...hero} image={assets.holdsPink} imageAlt="Colourful climbing holds in pink and yellow on a teal indoor wall" />
+	<Stats stats={stats} />
+	<Ticker items={ticker} />
+	<IntroVideo {...intro} videoUrl={assets.videoUrl} poster={assets.videoPoster} />
+	<EventStrip heading="Next up" events={next} allHref="/prototype/crisp/events" allLabel="Full timetable" />
+	<MerchTeaser
+		heading="Merch"
+		dropName={merch.drop.name}
+		closesLabel={merch.drop.closesLabel}
+		items={merch.items}
+		tints={merch.colours.map((c) => c.hex)}
+		href="/prototype/crisp/merch"
+		cta="See the Drop"
+	/>
+	<InstagramBand handle={site.instagramHandle} url={site.instagramUrl} label="Follow on Instagram" text="Photos from the wall, Session news and the odd chalk cloud." />
+</Layout>

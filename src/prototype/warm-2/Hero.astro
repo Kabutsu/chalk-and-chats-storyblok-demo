@@ -1,0 +1,22 @@
+---
+// PROTOTYPE — Storyblok block: hero (headline tile with both CTAs). Props shaped like data.hero.
+import Blob from './Blob.astro';
+const { hero } = Astro.props;
+---
+<section class="tile t-head" aria-labelledby="hero-h">
+	<Blob colour="var(--butter)" variant={1} size={150} style="right:-40px;top:-40px" />
+	<Blob colour="var(--coral)" variant={2} size={90} style="right:70px;bottom:-34px" />
+	<p class="eyebrow">{hero.eyebrow}</p>
+	<h1 id="hero-h">{hero.headline}</h1>
+	<p class="sub">{hero.subheadline}</p>
+	<div class="ctas">
+		<div>
+			<a class="btn btn--green" href={hero.primaryCta.url}>{hero.primaryCta.label}</a>
+		</div>
+		<div>
+			<a class="btn btn--butter" href={hero.secondaryCta.url}>
+				<span>{hero.secondaryCta.label}<small>{hero.secondaryCta.note}</small></span>
+			</a>
+		</div>
+	</div>
+</section>

@@ -1,0 +1,8 @@
+---
+// PROTOTYPE — Storyblok block: Instagram link tile.
+const { site } = Astro.props;
+---
+<section class="tile t-ig tile--sky" aria-labelledby="ig-h">
+	<h2 id="ig-h">Follow along</h2>
+	<a class="btn" href={site.instagramUrl}>Instagram {site.instagramHandle}</a>
+</section>

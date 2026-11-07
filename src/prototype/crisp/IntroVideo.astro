@@ -1,0 +1,54 @@
+---
+// PROTOTYPE — Storyblok block: intro_video. Portrait 9:16 click-to-load facade (no autoplay on load, preload none).
+import { Image } from 'astro:assets';
+interface Props {
+	heading: string;
+	body: string[];
+	videoLabel: string;
+	videoDurationLabel: string;
+	videoUrl: string;
+	poster: ImageMetadata;
+}
+const { heading, body, videoLabel, videoDurationLabel, videoUrl, poster } = Astro.props;
+---
+
+<section class="intro on-dark" aria-labelledby="intro-h">
+	<div class="wrap intro__grid">
+		<div class="intro__copy">
+			<p class="tag tag--lime">01 / About</p>
+			<h2 id="intro-h" class="h-display">{heading}</h2>
+			{body.map((p) => <p class="intro__p">{p}</p>)}
+		</div>
+		<div class="intro__video" data-video>
+			<a class="facade" href={videoUrl} data-facade>
+				<Image src={poster} alt="" widths={[360, 540, 720]} sizes="(min-width: 60rem) 360px, 90vw" class="facade__img" loading="lazy" />
+				<span class="facade__play" aria-hidden="true">
+					<svg viewBox="0 0 24 24" width="36" height="36"><path d="M8 5v14l11-7z" fill="currentColor" /></svg>
+				</span>
+				<span class="facade__label">
+					<span class="facade__text">{videoLabel}</span>
+					<span class="facade__dur">{videoDurationLabel}</span>
+				</span>
+			</a>
+		</div>
+	</div>
+</section>
+
+<script>
+	document.querySelectorAll<HTMLElement>('[data-video]').forEach((wrap) => {
+		const facade = wrap.querySelector<HTMLAnchorElement>('[data-facade]');
+		facade?.addEventListener('click', (e) => {
+			e.preventDefault();
+			const v = document.createElement('video');
+			v.controls = true;
+			v.preload = 'none';
+			v.playsInline = true;
+			v.src = facade.href;
+			v.className = 'intro__player';
+			v.setAttribute('aria-label', facade.querySelector('.facade__text')?.textContent ?? 'Welcome video');
+			facade.replaceWith(v);
+			v.focus();
+			v.play().catch(() => {});
+		});
+	});
+</script>

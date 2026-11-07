@@ -1,0 +1,24 @@
+---
+// PROTOTYPE — Storyblok block: faq (entries admin-editable). Native <details> accordions.
+interface Props { heading: string; items: { question: string; answer: string }[] }
+const { heading, items } = Astro.props;
+---
+
+<section class="faq" aria-labelledby="faq-h">
+	<div class="wrap faq__grid">
+		<div>
+			<p class="tag">05 / FAQ</p>
+			<h2 id="faq-h" class="h-display">{heading}</h2>
+		</div>
+		<div class="faq__list">
+			{
+				items.map((f) => (
+					<details class="acc">
+						<summary>{f.question}<span class="acc__icon" aria-hidden="true"></span></summary>
+						<p>{f.answer}</p>
+					</details>
+				))
+			}
+		</div>
+	</div>
+</section>

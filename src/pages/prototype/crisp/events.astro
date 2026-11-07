@@ -1,0 +1,14 @@
+---
+// PROTOTYPE — crisp variant: Events
+import Layout from '../../../prototype/crisp/Layout.astro';
+import PageHead from '../../../prototype/crisp/PageHead.astro';
+import EventList from '../../../prototype/crisp/EventList.astro';
+import { getEvents, eventTypes } from '../../../prototype/data';
+---
+
+<Layout title="Events" description="Sessions, socials and trips from Chalk & Chats.">
+	<PageHead kicker="Timetable" title="Events" lead="Every Wednesday at The Climbing Hangar, a monthly Monday at a second wall, plus socials and trips." />
+	<div class="wrap ev-wrap">
+		<EventList events={getEvents()} types={eventTypes} />
+	</div>
+</Layout>

@@ -1,0 +1,25 @@
+---
+// PROTOTYPE — Storyblok block: event teaser strip (next few events).
+import { dayName, dayNum, monthShort, timeRange } from './format';
+import TypeBadge from './TypeBadge.astro';
+const { events, heading = 'Coming up', allLabel = 'See all events' } = Astro.props;
+const base = '/prototype/warm-2';
+---
+<section class="tile t-events" aria-labelledby="ev-h">
+	<h2 id="ev-h">{heading}</h2>
+	<ul class="mini-events">
+		{events.map((e: any) => (
+			<li>
+				<a href={`${base}/events#${e.id}`}>
+					<span class="datebadge"><span class="dow">{dayName(e.start)}</span><span class="num">{dayNum(e.start)}</span><span class="mon">{monthShort(e.start)}</span></span>
+					<span>
+						<strong>{e.title}</strong>
+						<span class="meta">{timeRange(e)} · {e.place.name}</span><br />
+						<TypeBadge type={e.type} />
+					</span>
+				</a>
+			</li>
+		))}
+	</ul>
+	<a class="btn btn--green" href={`${base}/events`}>{allLabel}</a>
+</section>
