@@ -14,7 +14,7 @@ import { assets } from '../../../prototype/assets';
 const events = getEvents();
 const next = events.slice(0, 4);
 const stats = [
-	{ value: String(site.memberCount), label: 'Members' },
+	{ value: `${site.memberCount}+`, label: 'Members' },
 	{ value: String(events.length), label: 'Events coming up' },
 	{ value: String(Object.keys(walls).length), label: 'Walls we climb at' },
 	{ value: highlights[0].title.replace(/ welcome$/i, ''), label: 'Every grade' },

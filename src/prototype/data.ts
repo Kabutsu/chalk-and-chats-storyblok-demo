@@ -8,7 +8,7 @@ export const site = {
 	instagramUrl: 'https://www.instagram.com/chalkandchats.example',
 	instagramHandle: '@chalkandchats.example',
 	contactEmail: 'hello@chalkandchats.example',
-	memberCount: 150,
+	memberCount: 100,
 	primaryColour: '#437032',
 	nav: [
 		{ label: 'Home', slug: '' },
@@ -57,7 +57,7 @@ export const hero = {
 export const intro = {
 	heading: 'What is Chalk & Chats?',
 	body: [
-		'We’re a local group of about 150 climbers who meet to boulder, share tips and catch up over a drink afterwards. Nobody’s keeping score — well, except at our occasional competition nights.',
+		'We’re a local group of about 100+ climbers who meet to boulder, share tips and catch up over a drink afterwards. Nobody’s keeping score — well, except at our occasional competition nights.',
 		'Whether you’ve climbed for ten years or ten minutes, there’s always someone to climb with, a problem to puzzle over and a post-session chat to join.',
 	],
 	videoLabel: 'Watch our 2-minute welcome video',
