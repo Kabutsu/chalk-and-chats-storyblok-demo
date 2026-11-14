@@ -1,0 +1,22 @@
+---
+// PROTOTYPE — Storyblok block: link_panels (badge, title, body, links).
+import { aboutLinks } from '../data';
+import { href } from './format';
+const { panels = aboutLinks } = Astro.props;
+---
+<section class="band" aria-label="More about us">
+	<div class="wrap">
+		<div class="panel-grid">
+			{panels.map((p: any) => (
+				<div class="flat panel">
+					<p class="when-tag">{p.badge}</p>
+					<h2>{p.title}</h2>
+					<p>{p.body}</p>
+					<div class="btn-row">
+						{p.links.map((l: any, j: number) => <a class={`btn btn--sm ${j === 0 ? 'btn--primary' : 'btn--outline'}`} href={href(l.slug)}>{l.label}</a>)}
+					</div>
+				</div>
+			))}
+		</div>
+	</div>
+</section>

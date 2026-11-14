@@ -1,0 +1,18 @@
+---
+// PROTOTYPE — warm-4 home (Design B, calm). Order: hero > first Session > Coming up > Where we climb > About links > footer.
+import Layout from '../../../prototype/warm-4/Layout.astro';
+import Hero from '../../../prototype/warm-4/Hero.astro';
+import FirstSessionSummary from '../../../prototype/warm-4/FirstSessionSummary.astro';
+import ComingUp from '../../../prototype/warm-4/ComingUp.astro';
+import WhereWeClimb from '../../../prototype/warm-4/WhereWeClimb.astro';
+import AboutLinks from '../../../prototype/warm-4/AboutLinks.astro';
+import { hero, intro } from '../../../prototype/data';
+---
+
+<Layout title="Home" cta={false}>
+	<Hero hero={hero} intro={intro} />
+	<FirstSessionSummary />
+	<ComingUp />
+	<WhereWeClimb />
+	<AboutLinks />
+</Layout>

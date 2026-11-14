@@ -1,0 +1,14 @@
+---
+// PROTOTYPE — Storyblok block: faq (native details accordions)
+import { faq } from '../data';
+const { items = faq } = Astro.props;
+---
+
+<div class="faq">
+	{items.map((f: any) => (
+		<details>
+			<summary>{f.question}</summary>
+			<div class="ans"><p>{f.answer}</p></div>
+		</details>
+	))}
+</div>

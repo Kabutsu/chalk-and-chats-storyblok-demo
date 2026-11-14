@@ -1,0 +1,22 @@
+---
+// PROTOTYPE — Storyblok block: where_we_climb (list of Walls with usual Session pattern and one CTA each).
+import { whereWeClimb } from '../data';
+import { href } from './format';
+const { data = whereWeClimb } = Astro.props;
+---
+<section class="band band--cream2" aria-labelledby="wwc-h">
+	<div class="wrap">
+		<h2 id="wwc-h">{data.heading}</h2>
+		<p class="lede">{data.intro}</p>
+		<ul class="climb-grid">
+			{data.walls.map((w: any, i: number) => (
+				<li class="flat">
+					<p class="when-tag">{w.pattern}</p>
+					<h3>{w.wall.name}</h3>
+					<p>{w.blurb}</p>
+					<a class={`btn btn--sm ${i === 0 ? 'btn--primary' : 'btn--outline'}`} href={w.cta.external ? w.cta.url : href(w.cta.url)} rel={w.cta.external ? 'noopener' : undefined}>{w.cta.label}<span class="sr-only"> — {w.wall.name}{w.cta.external ? ' (external site)' : ''}</span></a>
+				</li>
+			))}
+		</ul>
+	</div>
+</section>

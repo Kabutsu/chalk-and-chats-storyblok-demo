@@ -1,0 +1,13 @@
+---
+// PROTOTYPE — photo banner with the page's single h1
+import { Image } from 'astro:assets';
+const { title, image, alt = '', text } = Astro.props;
+---
+
+<div class="banner scrim on-dark">
+	<Image src={image} alt={alt} widths={[640, 1024, 1600]} sizes="100vw" loading="eager" />
+	<div class="wrap">
+		<h1>{title}</h1>
+		{text && <p>{text}</p>}
+	</div>
+</div>

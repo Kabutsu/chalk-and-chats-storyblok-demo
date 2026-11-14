@@ -1,0 +1,13 @@
+---
+// PROTOTYPE — Storyblok block: faq (native details accordions).
+const { faq, heading = 'Questions? We’ve got answers' } = Astro.props;
+---
+<section class="faq section-gap" aria-labelledby="faq-h">
+	<h2 id="faq-h">{heading}</h2>
+	{faq.map((f: any) => (
+		<details>
+			<summary>{f.question}</summary>
+			<p>{f.answer}</p>
+		</details>
+	))}
+</section>

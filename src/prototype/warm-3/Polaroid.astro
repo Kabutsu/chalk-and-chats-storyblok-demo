@@ -1,0 +1,9 @@
+---
+// PROTOTYPE — slightly tilted polaroid photo. Tilt ≤ 3deg.
+import { Image } from 'astro:assets';
+const { image, alt = '', caption, tilt = -2, width = 560 } = Astro.props;
+---
+<figure class="polaroid" style={`--tilt:${tilt}deg`}>
+	<Image src={image} alt={alt} width={width} height={width} widths={[280, 420, 560]} sizes="(min-width: 700px) 340px, 80vw" />
+	{caption && <figcaption>{caption}</figcaption>}
+</figure>

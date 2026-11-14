@@ -1,0 +1,19 @@
+---
+// PROTOTYPE — warm-3 home (Design A, fun). Order: hero > first Session > Coming up > Where we climb > About links > footer.
+import Layout from '../../../prototype/warm-3/Layout.astro';
+import Hero from '../../../prototype/warm-3/Hero.astro';
+import FirstSessionSummary from '../../../prototype/warm-3/FirstSessionSummary.astro';
+import UpcomingEvents from '../../../prototype/warm-3/UpcomingEvents.astro';
+import WhereWeClimb from '../../../prototype/warm-3/WhereWeClimb.astro';
+import AboutLinks from '../../../prototype/warm-3/AboutLinks.astro';
+import { hero, intro, firstSession, whereWeClimb, aboutLinks, getComingUp } from '../../../prototype/data';
+---
+<Layout>
+	<div class="bento">
+		<Hero hero={hero} intro={intro} />
+		<FirstSessionSummary firstSession={firstSession} />
+		<UpcomingEvents events={getComingUp(4)} />
+		<WhereWeClimb data={whereWeClimb} />
+		<AboutLinks panels={aboutLinks} />
+	</div>
+</Layout>

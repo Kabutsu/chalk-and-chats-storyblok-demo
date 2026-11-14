@@ -1,0 +1,38 @@
+---
+// PROTOTYPE
+// Design thesis (warm-4, Design B "calm"): the Claude artifact's forest header band, flat cream bands, quiet cards
+// and one gold accent. Montserrat + Inter. The story is carried by section order, not decoration.
+import '../warm-4/styles.css';
+import Switcher from '../Switcher.astro';
+import Header from './Header.astro';
+import Footer from './Footer.astro';
+import CtaBand from './CtaBand.astro';
+import { site } from '../data';
+interface Props { title: string; description?: string; cta?: boolean }
+const { title, description = site.tagline, cta = true } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" class="no-js">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="robots" content="noindex" />
+		<meta name="description" content={description} />
+		<title>{title} | {site.name}</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet" />
+		<script is:inline>document.documentElement.className = 'js';</script>
+	</head>
+	<body>
+		<a class="skip" href="#main">Skip to content</a>
+		<Header />
+		<main id="main" tabindex="-1">
+			<slot />
+		</main>
+		{cta && <CtaBand />}
+		<Footer />
+		<Switcher />
+	</body>
+</html>

@@ -1,0 +1,37 @@
+---
+// PROTOTYPE — Storyblok block: coming_up (next events of every type; recurring Sessions collapse to one row).
+import { getComingUp } from '../data';
+import { fmtRange, typeClass, href } from './format';
+const { count = 4 } = Astro.props;
+const events = getComingUp(count);
+const parts = (s: string) => {
+	const d = new Date(s + ':00Z');
+	const f = (o: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat('en-GB', { ...o, timeZone: 'UTC' }).format(d);
+	return { dow: f({ weekday: 'short' }), num: f({ day: 'numeric' }), mon: f({ month: 'short' }) };
+};
+---
+<section class="band" aria-labelledby="cu-h">
+	<div class="wrap">
+		<div class="section-head">
+			<h2 id="cu-h">Coming up</h2>
+			<a class="btn btn--outline btn--sm" href={href('events')}>See all events</a>
+		</div>
+		<ul class="ev-rows">
+			{events.map((e) => {
+				const d = parts(e.start);
+				return (
+					<li>
+						<a class="ev-row" href={`${href('events')}#ev-${e.id}`}>
+							<span class="when"><span class="dow">{d.dow}</span><span class="num">{d.num}</span><span class="mon">{d.mon}</span></span>
+							<span>
+								<h3>{e.title}</h3>
+								<p>{e.collapsed ? `${e.collapsed}, next ${d.dow} ${d.num} ${d.mon}` : `${d.dow} ${d.num} ${d.mon}`} · {fmtRange(e)} · {e.place.name}</p>
+							</span>
+							<span class={`badge ${typeClass(e.type)}`}>{e.type}</span>
+						</a>
+					</li>
+				);
+			})}
+		</ul>
+	</div>
+</section>

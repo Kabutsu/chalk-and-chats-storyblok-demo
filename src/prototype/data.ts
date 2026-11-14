@@ -1,5 +1,5 @@
 // PROTOTYPE — shared dummy content. Shapes mirror the future Storyblok block fields.
-// Placeholder values (URLs, second wall, prices, handle) are invented and must be replaced with real copy.
+// Placeholder values (URLs, prices, handle, team bios) are invented and must be replaced with real copy.
 
 export const site = {
 	name: 'Chalk & Chats',
@@ -19,10 +19,10 @@ export const site = {
 };
 
 export const variants = [
-	{ key: 'warm-1', label: 'Warm & Social 1' },
-	{ key: 'warm-2', label: 'Warm & Social 2' },
-	{ key: 'crisp', label: 'Crisp & Sporty' },
-	{ key: 'calm', label: 'Calm & Minimal' },
+	{ key: 'warm-1', label: 'Warm & Social 1 (reference)' },
+	{ key: 'warm-2', label: 'Warm & Social 2 (reference)' },
+	{ key: 'warm-3', label: 'Warm 3 — Fun (sidebar + tiles)' },
+	{ key: 'warm-4', label: 'Warm 4 — Calm (top nav + bands)' },
 ];
 
 // ---------- Walls ----------
@@ -32,13 +32,43 @@ export const walls = {
 		area: 'Southampton',
 		mapUrl: 'https://maps.google.com/?q=The+Climbing+Hangar+Southampton',
 	},
-	// Second wall is not named in the brief — invented placeholder.
-	second: {
-		name: 'Itchen Bouldering Co.',
+	bouldershack: {
+		name: 'Bouldershack',
 		area: 'Southampton',
-		mapUrl: 'https://maps.google.com/?q=Bouldering+Southampton',
+		mapUrl: 'https://maps.google.com/?q=Bouldershack+Southampton',
+	},
+	parthian: {
+		name: 'Parthian',
+		area: 'Hampshire',
+		mapUrl: 'https://maps.google.com/?q=Parthian+Climbing+Hampshire',
 	},
 };
+
+// ---------- Where we climb (Storyblok block: where_we_climb — a list of Walls) ----------
+export const whereWeClimb = {
+	heading: 'Where we climb',
+	intro: 'Our main nights are at The Climbing Hangar, with a monthly change of scenery and the odd visit further afield.',
+	walls: [
+		{ wall: walls.hangar, pattern: 'Every Wednesday · 18:30', blurb: 'Our main weekly Session. Book on so we know you’re coming.', cta: { label: 'Book on', url: 'https://example.com/the-climbing-hangar/chalk-and-chats-wednesday', external: true } },
+		{ wall: walls.bouldershack, pattern: 'Third Monday of the month · 19:00', blurb: 'No sign-up needed, just show up.', cta: { label: 'Details', url: 'events', external: false } },
+		{ wall: walls.parthian, pattern: 'Ad-hoc visits', blurb: 'Occasional Sessions at other Walls across Hampshire. Watch Coming up for dates.', cta: { label: 'Details', url: 'events', external: false } },
+	],
+};
+
+// ---------- About links (Storyblok block: link_panels) ----------
+export const aboutLinks = [
+	{ badge: 'About us', title: 'From 1:1 sessions to a community', body: 'What began as 1:1 sessions quickly became a community of about 150. We call The Climbing Hangar home, with the odd visit to other nearby Walls.', links: [{ label: 'Our story', slug: 'about' }, { label: 'Meet the team', slug: 'about#team' }] },
+	{ badge: 'Merch', title: 'Wear the chalk', body: 'Everything is made to order in occasional Drops, which keeps it affordable and avoids waste. Collect it from us at a Session.', links: [{ label: 'See the merch', slug: 'merch' }] },
+];
+
+// ---------- Team (Storyblok block: team — placeholder bios; replace with the real team) ----------
+export const team = [
+	{ name: 'Ellie', role: 'Chalk & Chats creator', spot: 'Overhang or on the boards', fact: 'Has a dinosaur tattoo' },
+	{ name: 'Callum', role: 'Session co-host', spot: 'Down in slab town', fact: 'Can do the splits' },
+	{ name: 'Andy', role: 'Media lead', spot: 'The tension board', fact: 'Plays the guitar' },
+	{ name: 'Will', role: 'Head of welfare', spot: 'On the slab wall', fact: 'Taught a rock star’s child to sail' },
+];
+
 
 export const wednesdayBookingUrl = 'https://example.com/the-climbing-hangar/chalk-and-chats-wednesday'; // external booking page
 
@@ -67,7 +97,7 @@ export const intro = {
 // ---------- Values / highlights (used for About + Home) ----------
 export const highlights = [
 	{ title: 'All levels welcome', body: 'From your very first V0 to your hardest project, you’ll find people at your pace.' },
-	{ title: 'Weekly & monthly sessions', body: 'Every Wednesday evening, plus a monthly Monday session at a second wall.' },
+	{ title: 'Weekly & monthly sessions', body: 'Every Wednesday evening, plus a monthly Monday session at Bouldershack.' },
 	{ title: 'Social, not stuffy', body: 'Board games, yoga, pub trips and the odd outdoor adventure — climbing is just the start.' },
 ];
 
@@ -116,7 +146,7 @@ export const firstSession = {
 		{ title: 'Climb, chat, repeat', body: 'Climb at your own pace, rest, chat, and head to the bar or café with the group afterwards.' },
 	],
 	cost: 'Free to join. You only pay the wall’s entry fee (around £9) plus any shoe hire.',
-	kit: 'We don’t hire kit ourselves, but both walls we visit have shoes and chalk for hire.',
+	kit: 'We don’t hire kit ourselves, but the Walls we visit have shoes and chalk for hire.',
 };
 
 // ---------- Events ----------
@@ -188,9 +218,9 @@ export function getEvents(): ClubEvent[] {
 				type: 'Session',
 				start: `${ymd(d)}T19:00`,
 				end: `${ymd(d)}T21:30`,
-				place: walls.second,
+				place: walls.bouldershack,
 				description:
-					'A change of scenery: our monthly session at a different wall with fresh problems to try. No booking — just turn up.',
+					'A change of scenery: our monthly Session at Bouldershack with fresh problems to try. No booking — just turn up.',
 				cost: 'Wall entry applies (around £8). Chalk & Chats is free.',
 				recurrence: 'Every third Monday',
 				image: 'holdsPink',
@@ -204,6 +234,14 @@ export function getEvents(): ClubEvent[] {
 		events.push({ ...e, id: `${e.type.toLowerCase()}-${ymd(d)}`, start: `${ymd(d)}T${from}`, end: `${ymd(d)}T${to}` });
 	};
 
+	oneOff(8, '18:30', '21:30', {
+		title: 'Parthian Visit',
+		type: 'Session',
+		place: walls.parthian,
+		description: 'A one-off Session at another Wall. Same friendly crowd, different problems. Lifts shared from Southampton if you need one.',
+		cost: 'Wall entry applies (around £10). Chalk & Chats is free.',
+		image: 'holdsPink',
+	});
 	oneOff(4, '19:00', '22:00', {
 		title: 'Board Games Night',
 		type: 'Social',
@@ -310,4 +348,19 @@ export const merch = {
 /** Parse ?drop= into a DropState, defaulting to 'open'. */
 export function parseDropState(v: string | null): DropState {
 	return v === 'closed' || v === 'none' ? v : 'open';
+}
+
+/** Next events for the home page "Coming up" block. Recurring Sessions collapse to one row ("Every Wednesday, next …"). */
+export function getComingUp(count = 4): (ClubEvent & { collapsed?: string })[] {
+	const seen = new Set<string>();
+	const out: (ClubEvent & { collapsed?: string })[] = [];
+	for (const e of getEvents()) {
+		if (e.recurrence) {
+			if (seen.has(e.title)) continue;
+			seen.add(e.title);
+			out.push({ ...e, collapsed: e.recurrence });
+		} else out.push(e);
+		if (out.length === count) break;
+	}
+	return out;
 }

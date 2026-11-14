@@ -27,7 +27,7 @@ Anything on the Chalk & Chats calendar. Every Event has a type: Session, Social,
 _Avoid_: Meetup, activity
 
 **Session**:
-A regular climbing night at a Wall. Currently every Wednesday at The Climbing Hangar, and every third Monday at a second Wall.
+A climbing night at a Wall. Most are regular (currently every Wednesday at The Climbing Hangar, and every third Monday at Bouldershack); others are one-off visits to another Wall, such as Parthian.
 _Avoid_: Meet, climb night
 
 **Social**:
@@ -39,7 +39,7 @@ An occasional outdoor climbing Event.
 _Avoid_: Outing, excursion
 
 **Wall**:
-An indoor climbing venue where Sessions and Competitions are held.
+An indoor climbing venue where Sessions and Competitions are held. Current Walls are The Climbing Hangar, Bouldershack and Parthian. Each Wall is listed with its usual Session pattern, or as one-off visits only.
 _Avoid_: Gym, centre, venue
 
 ## Merch

@@ -1,0 +1,15 @@
+---
+// PROTOTYPE — Storyblok block: link_panels (badge, title, body, links).
+const { panels } = Astro.props;
+const base = '/prototype/warm-3';
+---
+<section class="two panels" aria-label="More about us">
+	{panels.map((p: any, i: number) => (
+		<div class={`tile ${i === 1 ? 'tile--gold' : 'tile--soft'}`}>
+			<p class="eyebrow">{p.badge}</p>
+			<h2>{p.title}</h2>
+			<p>{p.body}</p>
+			<div class="ctas">{p.links.map((l: any, j: number) => <div><a class={`btn ${j === 0 ? 'btn--green' : ''}`} href={`${base}/${l.slug}`}>{l.label}</a></div>)}</div>
+		</div>
+	))}
+</section>

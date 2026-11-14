@@ -1,0 +1,19 @@
+---
+// PROTOTYPE — Storyblok block: where_we_climb (list of Walls with usual Session pattern and one CTA each).
+const { data } = Astro.props;
+const base = '/prototype/warm-3';
+---
+<section class="climb" aria-labelledby="wwc-h">
+	<h2 id="wwc-h">{data.heading}</h2>
+	<p>{data.intro}</p>
+	<ul class="climb-grid">
+		{data.walls.map((w: any, i: number) => (
+			<li class="tile">
+				<p class="when">{w.pattern}</p>
+				<h3>{w.wall.name}</h3>
+				<p>{w.blurb}</p>
+				<a class={`btn ${i === 0 ? 'btn--green' : ''}`} href={w.cta.external ? w.cta.url : `${base}/${w.cta.url}`}>{w.cta.label}<span class="sr"> — {w.wall.name}{w.cta.external ? ' (external site)' : ''}</span></a>
+			</li>
+		))}
+	</ul>
+</section>

@@ -1,0 +1,49 @@
+---
+// PROTOTYPE
+import { Image } from 'astro:assets';
+import { assets } from '../assets';
+import { site } from '../data';
+import { href } from './format';
+const path = Astro.url.pathname.replace(/\/+$/, '');
+const items = site.nav.map((n) => ({ ...n, href: href(n.slug), current: path === href(n.slug) }));
+---
+
+<header class="site-header">
+	<div class="wrap">
+		<a class="brand" href={href('')} aria-label={`${site.name} — home`}>
+			<Image src={assets.logo} alt="" width={104} height={104} />
+		</a>
+		<nav class="nav-desktop" aria-label="Main">
+			<ul>
+				{items.map((i) => <li><a href={i.href} aria-current={i.current ? 'page' : undefined}>{i.label}</a></li>)}
+			</ul>
+		</nav>
+		<a class="btn btn--accent btn--sm header-cta" href={site.whatsappUrl} rel="noopener">Join the WhatsApp group</a>
+		<button class="btn btn--ghost btn--sm menu-btn" type="button" aria-expanded="false" aria-controls="menu-dialog" id="menu-btn">Menu</button>
+		<dialog class="nav-menu" id="menu-dialog" aria-label="Menu">
+			<div class="inner">
+				<button class="btn btn--ghost btn--sm close" type="button" id="menu-close">Close menu</button>
+				<nav aria-label="Mobile main">
+					<ul>
+						{items.map((i) => <li><a class="navlink" href={i.href} aria-current={i.current ? 'page' : undefined}>{i.label}</a></li>)}
+					</ul>
+				</nav>
+				<a class="btn btn--accent" href={site.whatsappUrl} rel="noopener">Join the WhatsApp group</a>
+			</div>
+		</dialog>
+	</div>
+</header>
+
+<script>
+	const dlg = document.getElementById('menu-dialog') as HTMLDialogElement | null;
+	const btn = document.getElementById('menu-btn');
+	const close = document.getElementById('menu-close');
+	if (dlg && btn) {
+		btn.addEventListener('click', () => { dlg.showModal(); btn.setAttribute('aria-expanded', 'true'); });
+		close?.addEventListener('click', () => dlg.close());
+		dlg.addEventListener('close', () => { btn.setAttribute('aria-expanded', 'false'); (btn as HTMLElement).focus(); });
+		dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+		dlg.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => dlg.close()));
+		window.matchMedia('(min-width: 900px)').addEventListener('change', (m) => { if (m.matches && dlg.open) dlg.close(); });
+	}
+</script>

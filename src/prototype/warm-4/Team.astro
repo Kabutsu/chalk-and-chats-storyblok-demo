@@ -1,0 +1,22 @@
+---
+// PROTOTYPE — Storyblok block: team (name, role, favourite spot, fun fact; photo to come).
+import { team } from '../data';
+const { data = team } = Astro.props;
+---
+<section class="band" id="team" aria-labelledby="team-h">
+	<div class="wrap">
+		<h2 id="team-h">Meet the team</h2>
+		<p class="lede">The faces you’ll see at Sessions. Say hello, they don’t bite.</p>
+		<ul class="team-grid">
+			{data.map((m: any) => (
+				<li class="flat">
+					<div class="avatar" aria-hidden="true">{m.name[0]}</div>
+					<h3>{m.name}</h3>
+					<p class="role">{m.role}</p>
+					<p><strong>Find me:</strong> {m.spot}</p>
+					<p><strong>Fun fact:</strong> {m.fact}</p>
+				</li>
+			))}
+		</ul>
+	</div>
+</section>

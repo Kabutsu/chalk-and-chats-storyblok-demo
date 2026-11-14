@@ -1,0 +1,24 @@
+---
+// PROTOTYPE — Storyblok block: hero (split: text + CTAs left, portrait video poster right opening a lightbox).
+// Fields: eyebrow, headline, subheadline, primary_cta, secondary_cta, video (asset), video_label, video_duration.
+import VideoLightbox from '../VideoLightbox.astro';
+const { hero, intro } = Astro.props;
+---
+<section class="hero-split" aria-labelledby="hero-h">
+	<div class="wrap hero-grid">
+		<div>
+			<p class="eyebrow">{hero.eyebrow}</p>
+			<h1 id="hero-h">{hero.headline}</h1>
+			<p class="sub">{hero.subheadline}</p>
+			<div class="btn-row">
+				<a class="btn btn--primary" href={hero.primaryCta.url} rel="noopener">{hero.primaryCta.label}</a>
+				<a class="btn btn--outline" href={hero.secondaryCta.url} rel="noopener">
+					<span>{hero.secondaryCta.label}<span class="btn-note">{hero.secondaryCta.note}</span></span>
+				</a>
+			</div>
+		</div>
+		<div class="hero-media">
+			<VideoLightbox label={intro.videoLabel} duration={intro.videoDurationLabel} />
+		</div>
+	</div>
+</section>

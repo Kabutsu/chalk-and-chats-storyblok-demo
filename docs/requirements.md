@@ -12,7 +12,7 @@ Gathered in a grilling session before prototyping. Vocabulary is defined in [CON
 ## Prototype scope
 
 - **Pages:** Home, Events, Merch, About / Your First Session. Competitions and the Result form are **out of scope**.
-- **Variants (4), all four pages each:** two Warm and Social, one Crisp and Sporty, one Calm and Minimal. Warm and Social is the preferred vibe.
+- **Variants (4), all four pages each:** `warm-1` and `warm-2` (the original Warm and Social pair, kept for reference), plus `warm-3` (Design A, fun: sidebar and tab bar chrome, month-view Events default) and `warm-4` (Design B, calm: top header band, list-view Events default). `warm-3` and `warm-4` follow the Claude artifact's palette and type and share one homepage order and content model; see the grilling summary in the session notes. `calm` and `crisp` were removed.
 - **Build:** plain Astro pages with dummy content shaped like future Storyblok block fields; sections are components that map onto future blocks. Each variant lives under its own route (e.g. `/prototype/warm-1`).
 - **Styling:** plain CSS with design tokens per variant (base colour `#437032`). Light front-end interaction only (calendar view toggle, merch size/colour picker, `<details>` accordions, mobile menu) using vanilla JS. No backend and no React for now.
 - **Quality bar:** mobile-first, checked at phone width. **Accessibility is non-negotiable** (target WCAG 2.2 AA: contrast, keyboard navigation, visible focus, semantic landmarks, alt text, reduced-motion support, captions/transcript for the video on the real site). Fast mobile load.
@@ -28,7 +28,7 @@ Hero with the primary and secondary calls to action; "What is Chalk & Chats?" se
 
 ### Events
 - List and month views, filterable by type (Session, Social, Competition, Trip).
-- Recurring Sessions come from a schedule: every Wednesday (The Climbing Hangar) and every third Monday (a second Wall).
+- Recurring Sessions come from a schedule: every Wednesday (The Climbing Hangar) and every third Monday (Bouldershack). One-off visits to other Walls (for example Parthian) are Sessions too.
 - Event fields: title and type badge, date/time, Wall or location with map link, description, cost as plain text (Wall entry is paid to the Wall), optional external booking link (only the Wednesday Session has one), optional cover photo, "Add to calendar" (.ics).
 - Migrating the existing calendar is out of scope.
 

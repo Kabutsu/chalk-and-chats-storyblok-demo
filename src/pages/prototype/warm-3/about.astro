@@ -1,0 +1,31 @@
+---
+// PROTOTYPE — warm-3 about: story > full first Session guide > team > FAQ > contact
+import Layout from '../../../prototype/warm-3/Layout.astro';
+import Polaroid from '../../../prototype/warm-3/Polaroid.astro';
+import FirstSession from '../../../prototype/warm-3/FirstSession.astro';
+import Team from '../../../prototype/warm-3/Team.astro';
+import Faq from '../../../prototype/warm-3/Faq.astro';
+import { site, hero, intro, firstSession, faq, team } from '../../../prototype/data';
+import { assets } from '../../../prototype/assets';
+---
+<Layout title="About">
+	<div class="page-head">
+		<h1>About {site.name}</h1>
+	</div>
+	<div class="collage">
+		<Polaroid image={assets.chalkHand} alt={hero.imageAlt} tilt={0} width={500} />
+		<Polaroid image={assets.holdsBlue} alt="Colourful climbing holds on a pale blue wall" tilt={-1.5} width={500} />
+	</div>
+	<section class="story" aria-label="Our story">
+		<h2>{intro.heading}</h2>
+		{intro.body.map((p) => <p>{p}</p>)}
+	</section>
+	<FirstSession firstSession={firstSession} />
+	<Team team={team} />
+	<Faq faq={faq} />
+	<section class="tile tile--soft section-gap" aria-labelledby="contact-h">
+		<h2 id="contact-h">Say hello</h2>
+		<p><a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a></p>
+		<p><a href={site.instagramUrl}>Instagram {site.instagramHandle}</a></p>
+	</section>
+</Layout>

@@ -1,0 +1,16 @@
+---
+// PROTOTYPE — Storyblok block: first_session_summary (heading, intro, steps, link to the full guide on About).
+import { firstSession } from '../data';
+import { href } from './format';
+const { data = firstSession } = Astro.props;
+---
+<section class="band band--cream2" aria-labelledby="fs-h">
+	<div class="wrap">
+		<h2 id="fs-h">{data.heading}</h2>
+		<p class="lede">{data.intro}</p>
+		<ol class="steps steps--b">
+			{data.steps.map((s: any) => <li><h3>{s.title}</h3><p>{s.body}</p></li>)}
+		</ol>
+		<p style="margin-top:24px"><a class="btn btn--primary" href={`${href('about')}#first-session`}>The full guide</a></p>
+	</div>
+</section>

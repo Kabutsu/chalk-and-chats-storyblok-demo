@@ -1,0 +1,14 @@
+---
+// PROTOTYPE — Storyblok block: first_session_summary (heading + steps + link to the full guide on About).
+const { firstSession } = Astro.props;
+---
+<section class="tile t-first" aria-labelledby="fs-h">
+	<div class="fs-head">
+		<h2 id="fs-h">{firstSession.heading}</h2>
+		<p>{firstSession.intro}</p>
+		<a class="btn btn--green" href="/prototype/warm-3/about#first-session">The full guide</a>
+	</div>
+	<ol class="steps steps--row">
+		{firstSession.steps.map((s: any) => <li><div><h3>{s.title}</h3><p>{s.body}</p></div></li>)}
+	</ol>
+</section>

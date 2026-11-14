@@ -1,0 +1,24 @@
+---
+// PROTOTYPE — Storyblok block: hero (text tile + portrait video poster tile that opens a lightbox).
+// Fields: eyebrow, headline, subheadline, primary_cta, secondary_cta, video (asset), video_label, video_duration.
+import Blob from './Blob.astro';
+import VideoLightbox from '../VideoLightbox.astro';
+const { hero, intro } = Astro.props;
+---
+<section class="tile t-head" aria-labelledby="hero-h">
+	<Blob colour="var(--gold)" variant={1} size={150} style="right:-40px;top:-40px" />
+	<p class="eyebrow">{hero.eyebrow}</p>
+	<h1 id="hero-h">{hero.headline}</h1>
+	<p class="sub">{hero.subheadline}</p>
+	<div class="ctas">
+		<div><a class="btn btn--green" href={hero.primaryCta.url}>{hero.primaryCta.label}</a></div>
+		<div>
+			<a class="btn btn--gold" href={hero.secondaryCta.url}>
+				<span>{hero.secondaryCta.label}<small>{hero.secondaryCta.note}</small></span>
+			</a>
+		</div>
+	</div>
+</section>
+<section class="tile t-video" aria-label="Welcome video">
+	<VideoLightbox label={intro.videoLabel} duration={intro.videoDurationLabel} />
+</section>
